@@ -1,0 +1,1806 @@
+{
+  "mode": "multi_agent",
+  "question": "Propose a causal chain explaining why a specific activity has disproportionately high synchronization time.",
+  "plan": [
+    {
+      "id": 1,
+      "description": "Identify the activity with disproportionately high synchronization time by ranking all activities, focusing on Application and Offer object types.",
+      "tool_hint": "Rank activities by OPerA synchronization time; compute mean, median, and upper-percentile synchronization time per activity for Application and Offer."
+    },
+    {
+      "id": 2,
+      "description": "Quantify how exceptional the selected activity's synchronization time is relative to other performance measures and activities.",
+      "tool_hint": "Compute OPerA measures for the selected activity: synchronization time, waiting time, sojourn time, pooling time, and lagging time; compare against activity-level distribution."
+    },
+    {
+      "id": 3,
+      "description": "Analyze object interaction patterns at the selected activity to detect whether synchronization delays are associated with many-to-one, one-to-many, or multi-object coordination between Applications and Offers.",
+      "tool_hint": "Analyze object interaction patterns at the selected activity, including counts of Applications, Offers, Case_R, and Workflow objects participating per event."
+    },
+    {
+      "id": 4,
+      "description": "Compare slow-synchronization cases for the selected activity against median cases to identify structural differences that may explain the delay.",
+      "tool_hint": "Identify the slowest percentile of objects for synchronization time at the selected activity, then compare slow vs median object structural features such as number of related Offers per Application, number of Workflow objects, and interaction complexity."
+    },
+    {
+      "id": 5,
+      "description": "Check whether object counts and relationship complexity correlate with longer flow times or synchronization delays around the selected activity.",
+      "tool_hint": "Correlate object counts, especially number of Offers per Application and Workflow-related objects, with synchronization time and overall flow time for objects passing through the selected activity."
+    },
+    {
+      "id": 6,
+      "description": "Synthesize a causal chain explaining why the selected activity has disproportionately high synchronization time, linking observed object interactions, structural complexity, and performance metrics.",
+      "tool_hint": "Synthesis step: combine results from synchronization ranking, OPerA metric comparison, interaction-pattern analysis, slow-vs-median comparison, and correlation analysis into a plausible causal explanation."
+    }
+  ],
+  "subtask_results": [
+    {
+      "subtask_id": 1,
+      "description": "Identify the activity with disproportionately high synchronization time by ranking all activities, focusing on Application and Offer object types.",
+      "finding": "{\"subtask_id\":1,\"findings\":\"Attempted to rank all 26 activities by synchronization time for object types Application and Offer. The log summary confirms an Application\u2192Offer O2O relationship exists with 42,995 links, so this cross-type focus is valid. However, get_synchronization_time returned count=0 and null median/mean/std for every activity when called with object_types=[\\\"Application\\\",\\\"Offer\\\"]. Therefore, no activity could be identified as having disproportionately high Application\u2013Offer synchronization time using the available synchronization-time tool output. Note: the requested upper-percentile synchronization time is not returned by the available tool; only median, mean, std, count, and unit are available.\",\"data\":{\"log_summary\":{\"num_events\":1202267,\"num_objects\":106162,\"object_types\":[\"Application\",\"Case_R\",\"Offer\",\"Workflow\"],\"num_activities\":26,\"o2o_relationships\":[{\"parent_type\":\"Application\",\"child_type\":\"Offer\",\"n_links\":42995},{\"parent_type\":\"Application\",\"child_type\":\"Workflow\",\"n_links\":31509}]},\"synchronization_results\":{\"A_Accepted\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"A_Cancelled\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"A_Complete\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"A_Concept\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"A_Create Application\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"A_Denied\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"A_Incomplete\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"A_Pending\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"A_Submitted\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"A_Validating\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"O_Accepted\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"O_Cancelled\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"O_Create Offer\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"O_Created\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"O_Refused\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"O_Returned\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"O_Sent (mail and online)\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"O_Sent (online only)\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"W_Assess potential fraud\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"W_Call after offers\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"W_Call incomplete files\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"W_Complete application\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"W_Handle leads\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"W_Personal Loan collection\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"W_Shortened completion \":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"W_Validate application\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0}},\"ranked_activities\":[]}}"
+    },
+    {
+      "subtask_id": 2,
+      "description": "Quantify how exceptional the selected activity's synchronization time is relative to other performance measures and activities.",
+      "finding": "{\n  \"subtask_id\": 2,\n  \"findings\": \"The selected activity appears to be A_Cancelled, which has the highest median synchronization time among activities with computable synchronization measures. Its median synchronization time is 2650388.5 seconds, ranked 1st out of 24 activities with valid synchronization results. This is extremely high relative to the activity-level synchronization distribution: the median of activity medians is approximately 40.5 seconds, while A_Cancelled is about 65,441.7 times larger. However, it is only slightly higher than O_Cancelled, the second-highest activity, with median synchronization time 2635681.0 seconds. For A_Cancelled, the high synchronization time aligns almost exactly with Application waiting time: Application median waiting time is 2650735.0 seconds and is ranked 1st among Application activities. In contrast, Case_R waiting time at A_Cancelled is only 1.0 second median, and Case_R sojourn time is 0.0 seconds median. Sojourn time for Application, pooling time, and lagging time were not computable for A_Cancelled. This suggests the exceptional synchronization time is driven primarily by long Application-side waiting rather than execution duration, same-type pooling, or post-event lagging.\",\n  \"data\": {\n    \"log_summary\": {\n      \"num_events\": 1202267,\n      \"object_types\": [\"Application\", \"Case_R\", \"Offer\", \"Workflow\"],\n      \"num_activities\": 26\n    },\n    \"selected_activity\": \"A_Cancelled\",\n    \"selected_activity_object_types\": [\"Application\", \"Case_R\"],\n    \"selected_activity_measures\": {\n      \"synchronization_time\": {\n        \"activity\": \"A_Cancelled\",\n        \"object_types\": [\"Application\", \"Case_R\"],\n        \"median_s\": 2650388.5,\n        \"mean_s\": 2307295.84,\n        \"std_s\": 1036882.7,\n        \"count\": 10430,\n        \"unit\": \"seconds\"\n      },\n      \"waiting_time\": {\n        \"Application\": {\n          \"median_s\": 2650735.0,\n          \"mean_s\": 2309362.02,\n          \"std_s\": 1034176.5,\n          \"p25_s\": 2632996.0,\n          \"p75_s\": 2664560.5,\n          \"count\": 10431,\n          \"unit\": \"seconds\"\n        },\n        \"Case_R\": {\n          \"median_s\": 1.0,\n          \"mean_s\": 5358.97,\n          \"std_s\": 68942.47,\n          \"p25_s\": 1.0,\n          \"p75_s\": 35.0,\n          \"count\": 10430,\n          \"unit\": \"seconds\"\n        }\n      },\n      \"sojourn_time\": {\n        \"Application\": {\n          \"median_s\": null,\n          \"mean_s\": null,\n          \"std_s\": null,\n          \"count\": 0,\n          \"unit\": \"seconds\"\n        },\n        \"Case_R\": {\n          \"median_s\": 0.0,\n          \"mean_s\": 0.04,\n          \"std_s\": 0.21,\n          \"count\": 10431,\n          \"unit\": \"seconds\"\n        }\n      },\n      \"pooling_time\": {\n        \"Application\": {\n          \"median_s\": null,\n          \"mean_s\": null,\n          \"std_s\": null,\n          \"count\": 0,\n          \"unit\": \"seconds\"\n        },\n        \"Case_R\": {\n          \"median_s\": null,\n          \"mean_s\": null,\n          \"std_s\": null,\n          \"count\": 0,\n          \"unit\": \"seconds\"\n        }\n      },\n      \"lagging_time\": {\n        \"activity\": \"A_Cancelled\",\n        \"object_types\": [\"Application\", \"Case_R\"],\n        \"median_s\": null,\n        \"mean_s\": null,\n        \"std_s\": null,\n        \"count\": 0,\n        \"unit\": \"seconds\"\n      }\n    },\n    \"synchronization_activity_distribution\": {\n      \"activities_with_valid_sync_data\": 24,\n      \"selected_activity_rank_by_median_sync\": 1,\n      \"activity_median_sync_distribution_median_s\": 40.5,\n      \"activity_median_sync_distribution_mean_s\": 315214.4,\n      \"selected_vs_distribution_median_ratio\": 65441.69,\n      \"top_sync_activities_by_median_s\": [\n        {\n          \"activity\": \"A_Cancelled\",\n          \"object_types\": [\"Application\", \"Case_R\"],\n          \"median_s\": 2650388.5,\n          \"mean_s\": 2307295.84,\n          \"count\": 10430\n        },\n        {\n          \"activity\": \"O_Cancelled\",\n          \"object_types\": [\"Case_R\", \"Offer\"],\n          \"median_s\": 2635681.0,\n          \"mean_s\": 1963403.69,\n          \"count\": 20897\n        },\n        {\n          \"activity\": \"O_Returned\",\n          \"object_types\": [\"Case_R\", \"Offer\"],\n          \"median_s\": 609705.0,\n          \"mean_s\": 764468.17,\n          \"count\": 23305\n        },\n        {\n          \"activity\": \"A_Validating\",\n          \"object_types\": [\"Application\", \"Case_R\"],\n          \"median_s\": 501617.0,\n          \"mean_s\": 586571.7,\n          \"count\": 38816\n        },\n        {\n          \"activity\": \"O_Refused\",\n          \"object_types\": [\"Case_R\", \"Offer\"],\n          \"median_s\": 423518.0,\n          \"mean_s\": 634207.31,\n          \"count\": 4695\n        }\n      ]\n    },\n    \"rankings_for_other_measures\": {\n      \"Application_waiting_top_10\": [\n        {\"activity\": \"A_Cancelled\", \"median_s\": 2650735.0, \"mean_s\": 2309362.02, \"count\": 10431},\n        {\"activity\": \"A_Validating\", \"median_s\": 501617.5, \"mean_s\": 586572.24, \"count\": 38816},\n        {\"activity\": \"A_Denied\", \"median_s\": 171215.0, \"mean_s\": 247104.1, \"count\": 3753},\n        {\"activity\": \"A_Pending\", \"median_s\": 77798.0, \"mean_s\": 234223.88, \"count\": 17228},\n        {\"activity\": \"A_Accepted\", \"median_s\": 74586.0, \"mean_s\": 122505.07, \"count\": 31509},\n        {\"activity\": \"A_Incomplete\", \"median_s\": 74519.0, \"mean_s\": 143734.22, \"count\": 23055},\n        {\"activity\": \"A_Complete\", \"median_s\": 264.0, \"mean_s\": 11357.31, \"count\": 31362},\n        {\"activity\": \"A_Concept\", \"median_s\": 49.0, \"mean_s\": 2635.88, \"count\": 31509},\n        {\"activity\": \"A_Submitted\", \"median_s\": 0.0, \"mean_s\": 0.34, \"count\": 20423}\n      ],\n      \"Application_sojourn_top_10\": [\n        {\"activity\": \"A_Complete\", \"median_s\": 861382.0, \"mean_s\": 1324080.71, \"count\": 31309},\n        {\"activity\": \"A_Incomplete\", \"median_s\": 94487.0, \"mean_s\": 345273.16, \"count\": 23013},\n        {\"activity\": \"A_Concept\", \"median_s\": 74586.0, \"mean_s\": 122505.07, \"count\": 31509},\n        {\"activity\": \"A_Validating\", \"median_s\": 74133.0, \"mean_s\": 146254.69, \"count\": 38813},\n        {\"activity\": \"A_Accepted\", \"median_s\": 265.0, \"mean_s\": 13072.98, \"count\": 31509},\n        {\"activity\": \"A_Denied\", \"median_s\": 99.0, \"mean_s\": 99.0, \"count\": 1},\n        {\"activity\": \"A_Submitted\", \"median_s\": 69.0, \"mean_s\": 4066.68, \"count\": 20423},\n        {\"activity\": \"A_Create Application\", \"median_s\": 0.0, \"mean_s\": 0.23, \"count\": 31509}\n      ],\n      \"Application_pooling_top_10\": [],\n      \"Case_R_waiting_top_10\": [\n        {\"activity\": \"A_Denied\", \"median_s\": 996.0, \"mean_s\": 8778.87, \"count\": 3751},\n        {\"activity\": \"A_Create Application\", \"median_s\": 736.0, \"mean_s\": 9625.1, \"count\": 31488},\n        {\"activity\": \"A_Accepted\", \"median_s\": 426.0, \"mean_s\": 9217.58, \"count\": 31498},\n        {\"activity\": \"O_Accepted\", \"median_s\": 254.0, \"mean_s\": 6663.93, \"count\": 17225},\n        {\"activity\": \"O_Create Offer\", \"median_s\": 186.0, \"mean_s\": 4633.85, \"count\": 42992},\n        {\"activity\": \"W_Handle leads\", \"median_s\": 28.0, \"mean_s\": 2605.38, \"count\": 47254},\n        {\"activity\": \"W_Personal Loan collection\", \"median_s\": 26.0, \"mean_s\": 8415.59, \"count\": 22},\n        {\"activity\": \"O_Returned\", \"median_s\": 21.0, \"mean_s\": 1164.17, \"count\": 23305},\n        {\"activity\": \"O_Sent (mail and online)\", \"median_s\": 20.0, \"mean_s\": 417.54, \"count\": 39706},\n        {\"activity\": \"O_Sent (online only)\", \"median_s\": 17.0, \"mean_s\": 109.63, \"count\": 2026}\n      ],\n      \"Case_R_sojourn_top_10\": [\n        {\"activity\": \"A_Concept\", \"median_s\": 252.0, \"mean_s\": 820.12, \"count\": 31509},\n        {\"activity\": \"O_Sent (online only)\", \"median_s\": 194.0, \"mean_s\": 13434.57, \"count\": 2021},\n        {\"activity\": \"A_Accepted\", \"median_s\": 182.0, \"mean_s\": 487.43, \"count\": 31509},\n        {\"activity\": \"O_Returned\", \"median_s\": 169.0, \"mean_s\": 1759.46, \"count\": 23303},\n        {\"activity\": \"A_Complete\", \"median_s\": 136.0, \"mean_s\": 3074.06, \"count\": 31356},\n        {\"activity\": \"W_Handle leads\", \"median_s\": 30.0, \"mean_s\": 1713.91, \"count\": 47262},\n        {\"activity\": \"A_Incomplete\", \"median_s\": 29.0, \"mean_s\": 419.22, \"count\": 23054},\n        {\"activity\": \"W_Assess potential fraud\", \"median_s\": 27.0, \"mean_s\": 19477.35, \"count\": 3277},\n        {\"activity\": \"A_Validating\", \"median_s\": 26.0, \"mean_s\": 486.55, \"count\": 38816},\n        {\"activity\": \"O_Created\", \"median_s\": 25.0, \"mean_s\": 296.58, \"count\": 42994}\n      ],\n      \"Case_R_pooling_top_10\": []\n    }\n  }\n}"
+    },
+    {
+      "subtask_id": 3,
+      "description": "Analyze object interaction patterns at the selected activity to detect whether synchronization delays are associated with many-to-one, one-to-many, or multi-object coordination between Applications and Offers.",
+      "finding": "{\"subtask_id\":3,\"findings\":\"Analyzed object interaction patterns at the selected activity assumed to be 'O_Create Offer'. All 42,995 events follow the same interaction pattern: exactly one Case_R object and exactly one Offer object participate per event. No Application or Workflow objects directly co-occur in these events. Therefore, the synchronization delay at this activity is not explained by direct many-to-one or one-to-many coordination between Applications and Offers within the same event. Instead, the observed interaction is strictly one Case_R-to-one Offer at the event level, suggesting that any Application\u2013Offer synchronization effect is likely indirect through object-to-object relationships rather than simultaneous multi-object participation in the activity event.\",\"data\":{\"log_summary\":{\"object_types\":[\"Application\",\"Case_R\",\"Offer\",\"Workflow\"],\"o2o_relationships\":[{\"parent_type\":\"Application\",\"child_type\":\"Offer\",\"n_links\":42995},{\"parent_type\":\"Application\",\"child_type\":\"Workflow\",\"n_links\":31509}]},\"activity\":\"O_Create Offer\",\"total_events\":42995,\"patterns\":[{\"object_types\":[\"Case_R\",\"Offer\"],\"co_occurrence_count\":42995,\"pct\":100.0}],\"objects_per_event_by_type\":{\"Case_R\":{\"mean\":1.0,\"median\":1.0,\"max\":1},\"Offer\":{\"mean\":1.0,\"median\":1.0,\"max\":1}}}}"
+    },
+    {
+      "subtask_id": 4,
+      "description": "Compare slow-synchronization cases for the selected activity against median cases to identify structural differences that may explain the delay.",
+      "finding": "{\"subtask_id\":4,\"findings\":\"Log summary showed valid O2O relationships only for Application\u2192Offer and Application\u2192Workflow. Direct synchronization-time queries for likely cross-type activities returned no observations (count=0), so the available tools did not permit identifying slowest cases specifically by synchronization time at the selected activity. As a proxy, I compared slowest Application flow-time cases against median Application cases and examined structural complexity via related Offer/Workflow counts and interaction patterns. Slow Applications have much longer flow time than median Applications (median 3,656,215s vs 1,645,576s; ratio 2.38) but do not have more events on average (8.31 vs 8.62; ratio 0.96). The major structural/activity difference is that A_Cancelled is disproportionately represented in slow cases (feature diff 8.31). Related Offer count is positively correlated with Application flow time (Pearson r=0.2202, Spearman rho=0.1782, both p=0.0), suggesting that having more Offers may contribute to longer delays. Workflow count cannot explain differences because every Application has exactly one Workflow link in the available O2O data, producing zero variance. Interaction-pattern checks for candidate activities showed simple 1:1 co-occurrence at each event, so the delay is more likely explained by lifecycle/structural accumulation across the case, especially multiple Offers and cancellation paths, rather than high per-event interaction complexity.\",\"data\":{\"log_summary\":{\"object_types\":[\"Application\",\"Case_R\",\"Offer\",\"Workflow\"],\"o2o_relationships\":[{\"parent_type\":\"Application\",\"child_type\":\"Offer\",\"n_links\":42995},{\"parent_type\":\"Application\",\"child_type\":\"Workflow\",\"n_links\":31509}]},\"synchronization_time_queries\":{\"A_Complete__Application_Workflow\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"A_Validating__Application_Workflow\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"O_Create Offer__Application_Offer\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"O_Created__Application_Offer\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"W_Validate application__Application_Workflow\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"W_Complete application__Application_Workflow\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0}},\"slowest_applications_90th_percentile\":{\"threshold_s\":3023425.0,\"count\":3151,\"total_objects\":31509,\"sample_slowest_objects\":[{\"oid\":\"1229186\",\"flow_time_s\":14604259.0,\"num_events\":10},{\"oid\":\"1232872\",\"flow_time_s\":14521927.0,\"num_events\":14},{\"oid\":\"1211785\",\"flow_time_s\":12603250.0,\"num_events\":11},{\"oid\":\"1207279\",\"flow_time_s\":12055983.0,\"num_events\":13},{\"oid\":\"1226714\",\"flow_time_s\":11772147.0,\"num_events\":8}]},\"slow_vs_median_application_comparison\":{\"slow_group\":{\"num_objects\":3151,\"mean_events_per_object\":8.31,\"median_flow_time_s\":3656215.0,\"mean_flow_time_s\":3990363.12,\"top_activities\":{\"A_Validating\":4498,\"A_Incomplete\":3577,\"A_Create Application\":3151,\"A_Concept\":3151,\"A_Accepted\":3151,\"A_Complete\":3151,\"A_Submitted\":2380,\"A_Cancelled\":1583,\"A_Pending\":1355,\"A_Denied\":202}},\"median_group\":{\"num_objects\":6301,\"mean_events_per_object\":8.62,\"median_flow_time_s\":1645576.0,\"mean_flow_time_s\":1679793.91,\"top_activities\":{\"A_Validating\":11477,\"A_Incomplete\":7248,\"A_Create Application\":6301,\"A_Concept\":6301,\"A_Accepted\":6301,\"A_Complete\":6296,\"A_Pending\":4832,\"A_Submitted\":4124,\"A_Denied\":1070,\"A_Cancelled\":381}},\"feature_diffs\":{\"flow_time_ratio\":2.38,\"event_count_ratio\":0.96,\"disproportionate_activities\":{\"A_Cancelled\":8.31}}},\"related_object_count_correlations\":{\"Application_Offer\":{\"pearson_r\":0.2202,\"pearson_p\":0.0,\"spearman_rho\":0.1782,\"spearman_p\":0.0,\"n\":31509,\"child_count_stats\":{\"mean\":1.36,\"median\":1.0,\"min\":1,\"max\":10},\"summary\":\"Positive correlation (r=0.220, p=0.0000) between Offer count and Application flow time.\"},\"Application_Workflow\":{\"error\":\"Correlation undefined: constant input (zero variance)\",\"n\":31509,\"child_count_unique\":1}},\"interaction_patterns\":{\"A_Complete\":{\"total_events\":31362,\"patterns\":[{\"object_types\":[\"Application\",\"Case_R\"],\"co_occurrence_count\":31362,\"pct\":100.0}],\"objects_per_event_by_type\":{\"Application\":{\"mean\":1.0,\"median\":1.0,\"max\":1},\"Case_R\":{\"mean\":1.0,\"median\":1.0,\"max\":1}}},\"A_Validating\":{\"total_events\":38816,\"patterns\":[{\"object_types\":[\"Application\",\"Case_R\"],\"co_occurrence_count\":38816,\"pct\":100.0}],\"objects_per_event_by_type\":{\"Application\":{\"mean\":1.0,\"median\":1.0,\"max\":1},\"Case_R\":{\"mean\":1.0,\"median\":1.0,\"max\":1}}},\"W_Validate application\":{\"total_events\":209496,\"patterns\":[{\"object_types\":[\"Case_R\",\"Workflow\"],\"co_occurrence_count\":209496,\"pct\":100.0}],\"objects_per_event_by_type\":{\"Case_R\":{\"mean\":1.0,\"median\":1.0,\"max\":1},\"Workflow\":{\"mean\":1.0,\"median\":1.0,\"max\":1}}},\"O_Create Offer\":{\"total_events\":42995,\"patterns\":[{\"object_types\":[\"Case_R\",\"Offer\"],\"co_occurrence_count\":42995,\"pct\":100.0}],\"objects_per_event_by_type\":{\"Case_R\":{\"mean\":1.0,\"median\":1.0,\"max\":1},\"Offer\":{\"mean\":1.0,\"median\":1.0,\"max\":1}}},\"O_Created\":{\"total_events\":42995,\"patterns\":[{\"object_types\":[\"Case_R\",\"Offer\"],\"co_occurrence_count\":42995,\"pct\":100.0}],\"objects_per_event_by_type\":{\"Case_R\":{\"mean\":1.0,\"median\":1.0,\"max\":1},\"Offer\":{\"mean\":1.0,\"median\":1.0,\"max\":1}}}}}}"
+    },
+    {
+      "subtask_id": 5,
+      "description": "Check whether object counts and relationship complexity correlate with longer flow times or synchronization delays around the selected activity.",
+      "finding": "{\"subtask_id\":5,\"findings\":\"Checked relationship complexity and object-count effects around the selected activity `W_Call after offers`. The log contains valid O2O relationships only for `Application`\u2192`Offer` and `Application`\u2192`Workflow`. The number of Offers per Application has a statistically significant positive correlation with Application flow time: Pearson r=0.2202 and Spearman rho=0.1782, both p=0.0. This suggests that Applications with more Offers tend to have longer total flow times, though the effect is modest. For Workflow count per Application, correlation is undefined because every Application has exactly one Workflow linked, so there is no variation in Workflow count. At `W_Call after offers`, interaction patterns show only `Case_R` and `Workflow` co-occurring, always one of each per event; Applications and Offers are not directly present at this activity. Synchronization time for the queried combination `Application`, `Offer`, `Workflow` returned no observations, but for the actual co-occurring types `Case_R` and `Workflow`, synchronization has median 0.0 seconds but a very high mean of 216474.84 seconds and std 532909.65 seconds over 191070 observations. This indicates that synchronization delays at `W_Call after offers` are not driven by multiple objects per event at the activity itself, but may be indirectly related to upstream Application-Offer complexity that prolongs overall flow and creates downstream timing misalignment between Case_R and Workflow objects.\",\"data\":{\"log_summary\":{\"object_types\":[\"Application\",\"Case_R\",\"Offer\",\"Workflow\"],\"valid_o2o_relationships\":[{\"parent_type\":\"Application\",\"child_type\":\"Offer\",\"n_links\":42995},{\"parent_type\":\"Application\",\"child_type\":\"Workflow\",\"n_links\":31509}]},\"correlations\":{\"Application_to_Offer_count_vs_Application_flow_time\":{\"parent_type\":\"Application\",\"child_type\":\"Offer\",\"pearson_r\":0.2202,\"pearson_p\":0.0,\"spearman_rho\":0.1782,\"spearman_p\":0.0,\"n\":31509,\"child_count_stats\":{\"mean\":1.36,\"median\":1.0,\"min\":1,\"max\":10},\"summary\":\"Positive correlation (r=0.220, p=0.0000) between Offer count and Application flow time.\"},\"Application_to_Workflow_count_vs_Application_flow_time\":{\"parent_type\":\"Application\",\"child_type\":\"Workflow\",\"error\":\"Correlation undefined: constant input (zero variance)\",\"n\":31509,\"child_count_unique\":1}},\"selected_activity\":\"W_Call after offers\",\"interaction_patterns\":{\"total_events\":191092,\"patterns\":[{\"object_types\":[\"Case_R\",\"Workflow\"],\"co_occurrence_count\":191092,\"pct\":100.0}],\"objects_per_event_by_type\":{\"Case_R\":{\"mean\":1.0,\"median\":1.0,\"max\":1},\"Workflow\":{\"mean\":1.0,\"median\":1.0,\"max\":1}}},\"synchronization_time\":{\"Application_Offer_Workflow\":{\"activity\":\"W_Call after offers\",\"object_types\":[\"Application\",\"Offer\",\"Workflow\"],\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0,\"unit\":\"seconds\"},\"Case_R_Workflow\":{\"activity\":\"W_Call after offers\",\"object_types\":[\"Case_R\",\"Workflow\"],\"median_s\":0.0,\"mean_s\":216474.84,\"std_s\":532909.65,\"count\":191070,\"unit\":\"seconds\"}}}}"
+    },
+    {
+      "subtask_id": 6,
+      "description": "Synthesize a causal chain explaining why the selected activity has disproportionately high synchronization time, linking observed object interactions, structural complexity, and performance metrics.",
+      "finding": "{\"subtask_id\":6,\"findings\":\"The selected activity with disproportionately high synchronization time is best explained as O_Accepted, where Case_R and Offer objects converge. Its synchronization time is very high: median 349009.0 seconds and mean 512817.76 seconds over 17225 cases. The interaction pattern itself is structurally simple at the event level\u2014every O_Accepted event contains exactly one Case_R and one Offer\u2014but the performance imbalance between the two object perspectives is large. Offer objects wait a median of 351415.5 seconds before O_Accepted, while Case_R objects wait only 254.0 seconds. This suggests the synchronization delay is not caused by many objects being grouped in the same event, but by the Offer lifecycle taking much longer to become ready for acceptance than the case-level process context. Supporting this, Offer waiting-time ranking shows O_Accepted is one of the slowest offer activities, though not the absolute slowest: O_Cancelled has median waiting 2635680.0 seconds, O_Returned 609943.0 seconds, O_Refused 423518.0 seconds, and O_Accepted 351415.5 seconds. Slow Offer objects have 2.58 times the median flow time of median Offer objects, with disproportionate representation of O_Cancelled and O_Sent (online only), indicating that delayed or exceptional offer paths contribute to long offer lifecycle durations. At the application level, the number of Offer children per Application is positively correlated with Application flow time, with Pearson r=0.2202 and Spearman rho=0.1782 over 31509 applications, suggesting that applications involving more offers are structurally more complex and take longer. In contrast, Application-to-Workflow count correlation is undefined because every Application has exactly one Workflow, so workflow multiplicity is not the driver. A plausible causal chain is: applications may generate one or more offers; more offers increase structural complexity and prolong application flow time; individual offers then spend long periods in post-send/return/decision states before being accepted; when O_Accepted finally occurs, the Case_R side is usually ready almost immediately, but the Offer side has accumulated days of waiting; this mismatch produces the high observed synchronization time at O_Accepted.\",\"data\":{\"log_summary\":{\"object_types\":[\"Application\",\"Case_R\",\"Offer\",\"Workflow\"],\"o2o_relationships\":[{\"parent_type\":\"Application\",\"child_type\":\"Offer\",\"n_links\":42995},{\"parent_type\":\"Application\",\"child_type\":\"Workflow\",\"n_links\":31509}]},\"selected_activity\":\"O_Accepted\",\"synchronization_time\":{\"activity\":\"O_Accepted\",\"object_types\":[\"Case_R\",\"Offer\"],\"median_s\":349009.0,\"mean_s\":512817.76,\"std_s\":602662.27,\"count\":17225,\"unit\":\"seconds\"},\"interaction_pattern\":{\"activity\":\"O_Accepted\",\"total_events\":17228,\"patterns\":[{\"object_types\":[\"Case_R\",\"Offer\"],\"co_occurrence_count\":17228,\"pct\":100.0}],\"objects_per_event_by_type\":{\"Case_R\":{\"mean\":1.0,\"median\":1.0,\"max\":1},\"Offer\":{\"mean\":1.0,\"median\":1.0,\"max\":1}}},\"opera_metrics_at_selected_activity\":{\"offer_waiting_time\":{\"median_s\":351415.5,\"mean_s\":516152.18,\"std_s\":602833.89,\"p25_s\":100857.0,\"p75_s\":632269.0,\"count\":17228},\"case_r_waiting_time\":{\"median_s\":254.0,\"mean_s\":6663.93,\"std_s\":61173.56,\"p25_s\":86.0,\"p75_s\":989.0,\"count\":17225},\"offer_sojourn_time\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"case_r_sojourn_time\":{\"median_s\":0.0,\"mean_s\":0.01,\"std_s\":0.09,\"count\":17228},\"pooling_time\":{\"Offer\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0},\"Case_R\":{\"median_s\":null,\"mean_s\":null,\"std_s\":null,\"count\":0}}},\"waiting_rankings\":{\"Offer\":[{\"activity\":\"O_Cancelled\",\"median_s\":2635680.0,\"mean_s\":1963546.2,\"count\":20898},{\"activity\":\"O_Returned\",\"median_s\":609943.0,\"mean_s\":765101.7,\"count\":23305},{\"activity\":\"O_Refused\",\"median_s\":423518.0,\"mean_s\":634207.35,\"count\":4695},{\"activity\":\"O_Accepted\",\"median_s\":351415.5,\"mean_s\":516152.18,\"count\":17228},{\"activity\":\"O_Sent (mail and online)\",\"median_s\":28.0,\"mean_s\":1592.32,\"count\":39707}],\"Case_R\":[{\"activity\":\"A_Denied\",\"median_s\":996.0,\"mean_s\":8778.87,\"count\":3751},{\"activity\":\"A_Create Application\",\"median_s\":736.0,\"mean_s\":9625.1,\"count\":31488},{\"activity\":\"A_Accepted\",\"median_s\":426.0,\"mean_s\":9217.58,\"count\":31498},{\"activity\":\"O_Accepted\",\"median_s\":254.0,\"mean_s\":6663.93,\"count\":17225},{\"activity\":\"O_Create Offer\",\"median_s\":186.0,\"mean_s\":4633.85,\"count\":42992}]},\"slow_vs_median\":{\"Offer\":{\"flow_time_ratio\":2.58,\"event_count_ratio\":0.92,\"slow_group_median_flow_time_s\":3283889.0,\"median_group_median_flow_time_s\":1372916.0,\"disproportionate_activities\":{\"O_Cancelled\":2.65,\"O_Sent (online only)\":1.42}},\"Application\":{\"flow_time_ratio\":2.38,\"event_count_ratio\":0.96,\"slow_group_median_flow_time_s\":3656215.0,\"median_group_median_flow_time_s\":1645576.0,\"disproportionate_activities\":{\"A_Cancelled\":8.31}}},\"correlations\":{\"Application_Offer\":{\"pearson_r\":0.2202,\"pearson_p\":0.0,\"spearman_rho\":0.1782,\"spearman_p\":0.0,\"n\":31509,\"child_count_stats\":{\"mean\":1.36,\"median\":1.0,\"min\":1,\"max\":10},\"summary\":\"Positive correlation (r=0.220, p=0.0000) between Offer count and Application flow time.\"},\"Application_Workflow\":{\"error\":\"Correlation undefined: constant input (zero variance)\",\"n\":31509,\"child_count_unique\":1}}}}"
+    }
+  ],
+  "final_answer": "## Proposed causal chain: why **A_Cancelled** has disproportionately high synchronization time\n\n### 1. The strongest supported \u201cdisproportionately high\u201d activity is **A_Cancelled**, not an Application\u2013Offer activity\n\nThe evidence is somewhat inconsistent across subtasks because different candidate activities were explored. The clearest ranking with valid synchronization-time observations is from **Subtask 2**, where **A_Cancelled** has the highest median synchronization time among all activities with computable synchronization measures:\n\n- **A_Cancelled synchronization time**, for `Application` + `Case_R`:  \n  - Median: **2,650,388.5 seconds**  \n  - Mean: **2,307,295.84 seconds**  \n  - Count: **10,430**\n- It ranks **1st out of 24** activities with valid synchronization data.\n- The median synchronization time across activity medians is only **40.5 seconds**, so A_Cancelled is about **65,442 times larger** than the typical activity median.\n\nThis makes **A_Cancelled** the best-supported activity for explaining a disproportionate synchronization delay.\n\nA limitation is that the original Application\u2013Offer synchronization focus could not be evaluated directly: **Subtask 1** reports that synchronization-time queries with `object_types=[\"Application\",\"Offer\"]` returned **count = 0** for every activity, despite the log having **42,995 Application\u2192Offer links**. Therefore, the causal explanation must rely on the valid `Application`\u2013`Case_R` synchronization result for A_Cancelled, plus indirect evidence about Offer-related complexity.\n\n---\n\n## Causal chain\n\n### Step 1 \u2014 Applications that eventually cancel tend to be part of long-running cases\n\nThe cancellation path is strongly associated with slow Application lifecycles. In **Subtask 4**, slow Applications \u2014 the top 10% by Application flow time \u2014 had much longer flow times than median Applications:\n\n- Slow Application median flow time: **3,656,215 seconds**\n- Median-group Application flow time: **1,645,576 seconds**\n- Ratio: **2.38\u00d7 longer**\n\nImportantly, the slow Applications did **not** have more events:\n\n- Slow group mean events per Application: **8.31**\n- Median group mean events per Application: **8.62**\n- Event-count ratio: **0.96**\n\nSo the delay is not mainly because slow Applications execute many more activities. Instead, time accumulates between activities.\n\nThe most disproportionate activity in slow Applications was **A_Cancelled**, with a feature difference of **8.31** in **Subtask 4**. That suggests cancellation is not just an endpoint; it is especially characteristic of long-running Application cases.\n\n---\n\n### Step 2 \u2014 At A_Cancelled, the Application side has been waiting for a very long time\n\nThe synchronization time at A_Cancelled almost exactly matches the Application waiting time reported in **Subtask 2**:\n\n| Measure at A_Cancelled | Median seconds |\n|---|---:|\n| Synchronization time, Application + Case_R | **2,650,388.5** |\n| Application waiting time | **2,650,735.0** |\n| Case_R waiting time | **1.0** |\n| Case_R sojourn time | **0.0** |\n\nThis is the key diagnostic evidence.\n\nThe Application object waits roughly **2.65 million seconds**, about **30.7 days**, before A_Cancelled. The Case_R object, by contrast, waits a median of only **1 second**. Case_R execution duration is also effectively zero, with median sojourn time **0.0 seconds**.\n\nTherefore, the synchronization delay is not caused by a long-running cancellation task itself. It is caused by a large readiness mismatch: the Case_R side is effectively available immediately, while the Application side has accumulated a long pre-cancellation wait.\n\n---\n\n### Step 3 \u2014 The delay is waiting-time driven, not execution-time, pooling, or lagging-time driven\n\n**Subtask 2** also reports that several alternative explanations were not supported:\n\n- Application sojourn time for A_Cancelled: not computable, count **0**\n- Pooling time for Application and Case_R: not computable, count **0**\n- Lagging time for A_Cancelled: not computable, count **0**\n- Case_R sojourn time: median **0.0 seconds**\n\nThus, the available evidence points specifically to **Application-side waiting before cancellation** as the driver of the high synchronization time.\n\n---\n\n### Step 4 \u2014 Offer complexity likely contributes indirectly to the long Application wait\n\nAlthough direct Application\u2013Offer synchronization times could not be computed, the log has a real structural relationship between Applications and Offers:\n\n- **Application\u2192Offer links:** **42,995**\n- **Application\u2192Workflow links:** **31,509**\n\nFrom **Subtasks 4, 5, and 6**, the number of Offers per Application is positively correlated with Application flow time:\n\n- Pearson correlation: **r = 0.2202**\n- Spearman correlation: **\u03c1 = 0.1782**\n- p-values: **0.0**\n- Number of Applications: **31,509**\n- Offer count per Application: mean **1.36**, median **1**, max **10**\n\nThis is a modest but statistically significant relationship. It suggests that Applications with more linked Offers tend to take longer overall.\n\nBy contrast, Workflow multiplicity cannot explain the delay because every Application has exactly one Workflow link, so Application\u2192Workflow count has zero variance.\n\nSo a plausible structural contributor is:\n\n> Applications with multiple Offers undergo more complex offer-handling paths, which prolong the Application lifecycle and increase the chance that the Application eventually reaches cancellation after a long wait.\n\nThis is supported indirectly by the positive Application\u2013Offer count correlation, but direct Application\u2013Offer synchronization at A_Cancelled was not observable with the available tool output.\n\n---\n\n### Step 5 \u2014 Cancellation-related activities are generally among the slowest synchronization points\n\nA_Cancelled is not an isolated anomaly. In **Subtask 2**, the second-highest synchronization activity is **O_Cancelled**:\n\n| Rank | Activity | Object types | Median sync time |\n|---:|---|---|---:|\n| 1 | **A_Cancelled** | Application + Case_R | **2,650,388.5 s** |\n| 2 | **O_Cancelled** | Case_R + Offer | **2,635,681.0 s** |\n| 3 | O_Returned | Case_R + Offer | 609,705.0 s |\n| 4 | A_Validating | Application + Case_R | 501,617.0 s |\n| 5 | O_Refused | Case_R + Offer | 423,518.0 s |\n\nThe fact that both **A_Cancelled** and **O_Cancelled** have median synchronization times around **2.6 million seconds** suggests that cancellation paths generally occur after a long period of inactivity or unresolved state, rather than immediately after prior processing.\n\nThis strengthens the causal interpretation: cancellation appears to be a late lifecycle resolution after prolonged waiting.\n\n---\n\n## Final causal explanation\n\nA concise causal chain is:\n\n1. **Some Applications enter complex or unresolved lifecycles**, often involving one or more linked Offers.  \n   Evidence: Applications have between **1 and 10 Offers**, and Offer count is positively correlated with Application flow time, with Pearson **r = 0.2202** and Spearman **\u03c1 = 0.1782**.\n\n2. **These Applications do not necessarily execute more events**, but they remain open much longer.  \n   Evidence: slow Applications have **2.38\u00d7** the median flow time of median Applications, while having slightly fewer events on average, **8.31 vs. 8.62**.\n\n3. **Cancellation is disproportionately associated with these slow Application cases.**  \n   Evidence: **A_Cancelled** is the most disproportionate activity in slow Applications, with feature difference **8.31**.\n\n4. **By the time A_Cancelled occurs, the Application object has accumulated about a month of waiting.**  \n   Evidence: Application waiting time at A_Cancelled has median **2,650,735 seconds**, almost identical to the A_Cancelled synchronization median of **2,650,388.5 seconds**.\n\n5. **The Case_R object is effectively ready immediately**, so the synchronization delay reflects a mismatch between a long-waiting Application and a near-instant Case_R perspective.  \n   Evidence: Case_R waiting time at A_Cancelled is median **1.0 second**, and Case_R sojourn time is median **0.0 seconds**.\n\n6. **Therefore, A_Cancelled has disproportionately high synchronization time because it synchronizes a long-stalled Application lifecycle with a Case_R object that does not itself contribute substantial delay.**\n\nIn short: **A_Cancelled is high because cancellation is reached after prolonged Application-side waiting, likely amplified by offer-related lifecycle complexity, while the Case_R side contributes almost no waiting or execution time.**\n\n---\n\n## Assumptions and limitations\n\n- Direct Application\u2013Offer synchronization could not be measured: **Subtask 1** and **Subtask 4** report `count = 0` for Application\u2013Offer synchronization queries. Therefore, the Application\u2013Offer part of the causal chain is indirect.\n- The selected activity is not fully consistent across subtasks. Some subtasks explored `O_Create Offer`, `W_Call after offers`, or `O_Accepted`. However, the strongest ranking evidence identifies **A_Cancelled** as the activity with the highest valid synchronization time.\n- Correlation between Offer count and Application flow time is modest, not proof of causation. It supports the possibility that Offer complexity contributes to longer Application lifecycles, but it does not alone establish that more Offers cause cancellation delay.\n- Pooling, lagging, and Application sojourn time at A_Cancelled were not computable, so the explanation relies mainly on synchronization time and waiting-time evidence.",
+  "tool_calls": [
+    {
+      "subtask_id": 1,
+      "tool": "get_log_summary",
+      "args": {},
+      "result_preview": "{\"num_events\": 1202267, \"num_objects\": 106162, \"num_e2o_relations\": 2404534, \"num_o2o_relations\": 74504, \"object_types\": [\"Application\", \"Case_R\", \"Offer\", \"Workflow\"], \"activities\": [\"A_Accepted\", \"A_Cancelled\", \"A_Complete\", \"A_Concept\", \"A_Create Application\", \"A_Denied\", \"A_Incomplete\", \"A_Pending\", \"A_Submitted\", \"A_Validating\", \"O_Accepted\", \"O_Cancelled\", \"O_Create Offer\", \"O_Created\", \"O_Refused\", \"O_Returned\", \"O_Sent (mail and online)\", \"O_Sent (online only)\", \"W_Assess potential fraud",
+      "elapsed_s": 0.109
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Accepted",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Accepted\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.323
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Cancelled",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Cancelled\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.095
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Complete",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Complete\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.104
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Concept",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Concept\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.115
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Create Application",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Create Application\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.098
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Denied",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Denied\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.064
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Incomplete",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Incomplete\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.122
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Pending",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Pending\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.088
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Submitted",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Submitted\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.116
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Validating",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Validating\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.135
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Accepted",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Accepted\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.135
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Cancelled",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Cancelled\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.129
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Create Offer",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Create Offer\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.134
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Created",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Created\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.148
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Refused",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Refused\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.08
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Returned",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Returned\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.129
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Sent (mail and online)",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Sent (mail and online)\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.136
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Sent (online only)",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Sent (online only)\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.068
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Assess potential fraud",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Assess potential fraud\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.108
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Call after offers",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Call after offers\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.375
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Call incomplete files",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Call incomplete files\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.283
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Complete application",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Complete application\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.25
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Handle leads",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Handle leads\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.144
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Personal Loan collection",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Personal Loan collection\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.085
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Shortened completion ",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Shortened completion \", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.061
+    },
+    {
+      "subtask_id": 1,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Validate application",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Validate application\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.36
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_log_summary",
+      "args": {},
+      "result_preview": "{\"num_events\": 1202267, \"num_objects\": 106162, \"num_e2o_relations\": 2404534, \"num_o2o_relations\": 74504, \"object_types\": [\"Application\", \"Case_R\", \"Offer\", \"Workflow\"], \"activities\": [\"A_Accepted\", \"A_Cancelled\", \"A_Complete\", \"A_Concept\", \"A_Create Application\", \"A_Denied\", \"A_Incomplete\", \"A_Pending\", \"A_Submitted\", \"A_Validating\", \"O_Accepted\", \"O_Cancelled\", \"O_Create Offer\", \"O_Created\", \"O_Refused\", \"O_Returned\", \"O_Sent (mail and online)\", \"O_Sent (online only)\", \"W_Assess potential fraud",
+      "elapsed_s": 0.121
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "A_Accepted"
+      },
+      "result_preview": "{\"activity\": \"A_Accepted\", \"total_events\": 31509, \"patterns\": [{\"object_types\": [\"Application\", \"Case_R\"], \"co_occurrence_count\": 31509, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Application\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.457
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "A_Cancelled"
+      },
+      "result_preview": "{\"activity\": \"A_Cancelled\", \"total_events\": 10431, \"patterns\": [{\"object_types\": [\"Application\", \"Case_R\"], \"co_occurrence_count\": 10431, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Application\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.181
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "A_Complete"
+      },
+      "result_preview": "{\"activity\": \"A_Complete\", \"total_events\": 31362, \"patterns\": [{\"object_types\": [\"Application\", \"Case_R\"], \"co_occurrence_count\": 31362, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Application\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.342
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "A_Concept"
+      },
+      "result_preview": "{\"activity\": \"A_Concept\", \"total_events\": 31509, \"patterns\": [{\"object_types\": [\"Application\", \"Case_R\"], \"co_occurrence_count\": 31509, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Application\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.352
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "A_Create Application"
+      },
+      "result_preview": "{\"activity\": \"A_Create Application\", \"total_events\": 31509, \"patterns\": [{\"object_types\": [\"Application\", \"Case_R\"], \"co_occurrence_count\": 31509, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Application\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.351
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "A_Denied"
+      },
+      "result_preview": "{\"activity\": \"A_Denied\", \"total_events\": 3753, \"patterns\": [{\"object_types\": [\"Application\", \"Case_R\"], \"co_occurrence_count\": 3753, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Application\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.108
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "A_Incomplete"
+      },
+      "result_preview": "{\"activity\": \"A_Incomplete\", \"total_events\": 23055, \"patterns\": [{\"object_types\": [\"Application\", \"Case_R\"], \"co_occurrence_count\": 23055, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Application\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.303
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "A_Pending"
+      },
+      "result_preview": "{\"activity\": \"A_Pending\", \"total_events\": 17228, \"patterns\": [{\"object_types\": [\"Application\", \"Case_R\"], \"co_occurrence_count\": 17228, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Application\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.225
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "A_Submitted"
+      },
+      "result_preview": "{\"activity\": \"A_Submitted\", \"total_events\": 20423, \"patterns\": [{\"object_types\": [\"Application\", \"Case_R\"], \"co_occurrence_count\": 20423, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Application\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.272
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "A_Validating"
+      },
+      "result_preview": "{\"activity\": \"A_Validating\", \"total_events\": 38816, \"patterns\": [{\"object_types\": [\"Application\", \"Case_R\"], \"co_occurrence_count\": 38816, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Application\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.423
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "O_Accepted"
+      },
+      "result_preview": "{\"activity\": \"O_Accepted\", \"total_events\": 17228, \"patterns\": [{\"object_types\": [\"Case_R\", \"Offer\"], \"co_occurrence_count\": 17228, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Offer\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.225
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "O_Cancelled"
+      },
+      "result_preview": "{\"activity\": \"O_Cancelled\", \"total_events\": 20898, \"patterns\": [{\"object_types\": [\"Case_R\", \"Offer\"], \"co_occurrence_count\": 20898, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Offer\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.267
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "O_Create Offer"
+      },
+      "result_preview": "{\"activity\": \"O_Create Offer\", \"total_events\": 42995, \"patterns\": [{\"object_types\": [\"Case_R\", \"Offer\"], \"co_occurrence_count\": 42995, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Offer\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.566
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "O_Created"
+      },
+      "result_preview": "{\"activity\": \"O_Created\", \"total_events\": 42995, \"patterns\": [{\"object_types\": [\"Case_R\", \"Offer\"], \"co_occurrence_count\": 42995, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Offer\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.533
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "O_Refused"
+      },
+      "result_preview": "{\"activity\": \"O_Refused\", \"total_events\": 4695, \"patterns\": [{\"object_types\": [\"Case_R\", \"Offer\"], \"co_occurrence_count\": 4695, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Offer\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.128
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "O_Returned"
+      },
+      "result_preview": "{\"activity\": \"O_Returned\", \"total_events\": 23305, \"patterns\": [{\"object_types\": [\"Case_R\", \"Offer\"], \"co_occurrence_count\": 23305, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Offer\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.314
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "O_Sent (mail and online)"
+      },
+      "result_preview": "{\"activity\": \"O_Sent (mail and online)\", \"total_events\": 39707, \"patterns\": [{\"object_types\": [\"Case_R\", \"Offer\"], \"co_occurrence_count\": 39707, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Offer\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.43
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "O_Sent (online only)"
+      },
+      "result_preview": "{\"activity\": \"O_Sent (online only)\", \"total_events\": 2026, \"patterns\": [{\"object_types\": [\"Case_R\", \"Offer\"], \"co_occurrence_count\": 2026, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Offer\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.098
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "W_Assess potential fraud"
+      },
+      "result_preview": "{\"activity\": \"W_Assess potential fraud\", \"total_events\": 3282, \"patterns\": [{\"object_types\": [\"Case_R\", \"Workflow\"], \"co_occurrence_count\": 3282, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Workflow\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.099
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "W_Call after offers"
+      },
+      "result_preview": "{\"activity\": \"W_Call after offers\", \"total_events\": 191092, \"patterns\": [{\"object_types\": [\"Case_R\", \"Workflow\"], \"co_occurrence_count\": 191092, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Workflow\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 2.101
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "W_Call incomplete files"
+      },
+      "result_preview": "{\"activity\": \"W_Call incomplete files\", \"total_events\": 168529, \"patterns\": [{\"object_types\": [\"Case_R\", \"Workflow\"], \"co_occurrence_count\": 168529, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Workflow\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 1.76
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "W_Complete application"
+      },
+      "result_preview": "{\"activity\": \"W_Complete application\", \"total_events\": 148900, \"patterns\": [{\"object_types\": [\"Case_R\", \"Workflow\"], \"co_occurrence_count\": 148900, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Workflow\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 1.735
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "W_Handle leads"
+      },
+      "result_preview": "{\"activity\": \"W_Handle leads\", \"total_events\": 47264, \"patterns\": [{\"object_types\": [\"Case_R\", \"Workflow\"], \"co_occurrence_count\": 47264, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Workflow\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.651
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "W_Personal Loan collection"
+      },
+      "result_preview": "{\"activity\": \"W_Personal Loan collection\", \"total_events\": 22, \"patterns\": [{\"object_types\": [\"Case_R\", \"Workflow\"], \"co_occurrence_count\": 22, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Workflow\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.097
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "W_Shortened completion "
+      },
+      "result_preview": "{\"activity\": \"W_Shortened completion \", \"total_events\": 238, \"patterns\": [{\"object_types\": [\"Case_R\", \"Workflow\"], \"co_occurrence_count\": 238, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Workflow\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.08
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "W_Validate application"
+      },
+      "result_preview": "{\"activity\": \"W_Validate application\", \"total_events\": 209496, \"patterns\": [{\"object_types\": [\"Case_R\", \"Workflow\"], \"co_occurrence_count\": 209496, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Workflow\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 2.377
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Accepted",
+        "object_types": [
+          "Application",
+          "Case_R"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Accepted\", \"object_types\": [\"Application\", \"Case_R\"], \"median_s\": 72902.0, \"mean_s\": 122937.87, \"std_s\": 235905.94, \"count\": 31498, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.269
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Cancelled",
+        "object_types": [
+          "Application",
+          "Case_R"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Cancelled\", \"object_types\": [\"Application\", \"Case_R\"], \"median_s\": 2650388.5, \"mean_s\": 2307295.84, \"std_s\": 1036882.7, \"count\": 10430, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.171
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Complete",
+        "object_types": [
+          "Application",
+          "Case_R"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Complete\", \"object_types\": [\"Application\", \"Case_R\"], \"median_s\": 264.0, \"mean_s\": 11357.3, \"std_s\": 95310.82, \"count\": 31362, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.178
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Concept",
+        "object_types": [
+          "Application",
+          "Case_R"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Concept\", \"object_types\": [\"Application\", \"Case_R\"], \"median_s\": 49.0, \"mean_s\": 2635.87, \"std_s\": 13790.73, \"count\": 31509, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.185
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Create Application",
+        "object_types": [
+          "Application",
+          "Case_R"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Create Application\", \"object_types\": [\"Application\", \"Case_R\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.159
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Denied",
+        "object_types": [
+          "Application",
+          "Case_R"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Denied\", \"object_types\": [\"Application\", \"Case_R\"], \"median_s\": 169663.0, \"mean_s\": 246000.04, \"std_s\": 334489.61, \"count\": 3751, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.111
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Incomplete",
+        "object_types": [
+          "Application",
+          "Case_R"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Incomplete\", \"object_types\": [\"Application\", \"Case_R\"], \"median_s\": 74519.0, \"mean_s\": 143734.22, \"std_s\": 181351.51, \"count\": 23055, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.211
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Pending",
+        "object_types": [
+          "Application",
+          "Case_R"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Pending\", \"object_types\": [\"Application\", \"Case_R\"], \"median_s\": 77798.0, \"mean_s\": 234223.87, \"std_s\": 364372.03, \"count\": 17228, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.159
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Submitted",
+        "object_types": [
+          "Application",
+          "Case_R"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Submitted\", \"object_types\": [\"Application\", \"Case_R\"], \"median_s\": 0.0, \"mean_s\": 0.0, \"std_s\": 0.03, \"count\": 20423, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.191
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Validating",
+        "object_types": [
+          "Application",
+          "Case_R"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Validating\", \"object_types\": [\"Application\", \"Case_R\"], \"median_s\": 501617.0, \"mean_s\": 586571.7, \"std_s\": 618666.3, \"count\": 38816, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.272
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Accepted",
+        "object_types": [
+          "Case_R",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Accepted\", \"object_types\": [\"Case_R\", \"Offer\"], \"median_s\": 349009.0, \"mean_s\": 512817.76, \"std_s\": 602662.27, \"count\": 17225, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.244
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Cancelled",
+        "object_types": [
+          "Case_R",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Cancelled\", \"object_types\": [\"Case_R\", \"Offer\"], \"median_s\": 2635681.0, \"mean_s\": 1963403.69, \"std_s\": 1229714.86, \"count\": 20897, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.186
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Create Offer",
+        "object_types": [
+          "Case_R",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Create Offer\", \"object_types\": [\"Case_R\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.218
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Created",
+        "object_types": [
+          "Case_R",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Created\", \"object_types\": [\"Case_R\", \"Offer\"], \"median_s\": 0.0, \"mean_s\": 0.0, \"std_s\": 0.0, \"count\": 42995, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.294
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Refused",
+        "object_types": [
+          "Case_R",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Refused\", \"object_types\": [\"Case_R\", \"Offer\"], \"median_s\": 423518.0, \"mean_s\": 634207.31, \"std_s\": 779083.49, \"count\": 4695, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.135
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Returned",
+        "object_types": [
+          "Case_R",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Returned\", \"object_types\": [\"Case_R\", \"Offer\"], \"median_s\": 609705.0, \"mean_s\": 764468.17, \"std_s\": 484442.7, \"count\": 23305, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.2
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Sent (mail and online)",
+        "object_types": [
+          "Case_R",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Sent (mail and online)\", \"object_types\": [\"Case_R\", \"Offer\"], \"median_s\": 0.0, \"mean_s\": 1831.18, \"std_s\": 63559.2, \"count\": 39706, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.224
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Sent (online only)",
+        "object_types": [
+          "Case_R",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Sent (online only)\", \"object_types\": [\"Case_R\", \"Offer\"], \"median_s\": 0.0, \"mean_s\": 2767.55, \"std_s\": 35966.39, \"count\": 2026, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.109
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Assess potential fraud",
+        "object_types": [
+          "Case_R",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Assess potential fraud\", \"object_types\": [\"Case_R\", \"Workflow\"], \"median_s\": 0.0, \"mean_s\": 43778.91, \"std_s\": 279852.27, \"count\": 3280, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.122
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Call after offers",
+        "object_types": [
+          "Case_R",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Call after offers\", \"object_types\": [\"Case_R\", \"Workflow\"], \"median_s\": 0.0, \"mean_s\": 216474.84, \"std_s\": 532909.65, \"count\": 191070, \"unit\": \"seconds\"}",
+      "elapsed_s": 1.054
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Call incomplete files",
+        "object_types": [
+          "Case_R",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Call incomplete files\", \"object_types\": [\"Case_R\", \"Workflow\"], \"median_s\": 0.0, \"mean_s\": 47932.77, \"std_s\": 191442.79, \"count\": 168525, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.857
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Complete application",
+        "object_types": [
+          "Case_R",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Complete application\", \"object_types\": [\"Case_R\", \"Workflow\"], \"median_s\": 32.0, \"mean_s\": 32562.99, \"std_s\": 128703.13, \"count\": 137763, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.764
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Handle leads",
+        "object_types": [
+          "Case_R",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Handle leads\", \"object_types\": [\"Case_R\", \"Workflow\"], \"median_s\": 0.0, \"mean_s\": 5993.36, \"std_s\": 63778.09, \"count\": 26831, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.333
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Personal Loan collection",
+        "object_types": [
+          "Case_R",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Personal Loan collection\", \"object_types\": [\"Case_R\", \"Workflow\"], \"median_s\": 0.0, \"mean_s\": 2010509.14, \"std_s\": 3825828.48, \"count\": 22, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.185
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Shortened completion ",
+        "object_types": [
+          "Case_R",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Shortened completion \", \"object_types\": [\"Case_R\", \"Workflow\"], \"median_s\": 0.0, \"mean_s\": 170121.89, \"std_s\": 1172150.83, \"count\": 238, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.126
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Validate application",
+        "object_types": [
+          "Case_R",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Validate application\", \"object_types\": [\"Case_R\", \"Workflow\"], \"median_s\": 0.0, \"mean_s\": 26339.41, \"std_s\": 90426.26, \"count\": 209479, \"unit\": \"seconds\"}",
+      "elapsed_s": 1.004
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_waiting_time",
+      "args": {
+        "activity": "A_Cancelled",
+        "object_type": "Application"
+      },
+      "result_preview": "{\"activity\": \"A_Cancelled\", \"object_type\": \"Application\", \"median_s\": 2650735.0, \"mean_s\": 2309362.02, \"std_s\": 1034176.5, \"p25_s\": 2632996.0, \"p75_s\": 2664560.5, \"count\": 10431, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.067
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_waiting_time",
+      "args": {
+        "activity": "A_Cancelled",
+        "object_type": "Case_R"
+      },
+      "result_preview": "{\"activity\": \"A_Cancelled\", \"object_type\": \"Case_R\", \"median_s\": 1.0, \"mean_s\": 5358.97, \"std_s\": 68942.47, \"p25_s\": 1.0, \"p75_s\": 35.0, \"count\": 10430, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.108
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_sojourn_time",
+      "args": {
+        "activity": "A_Cancelled",
+        "object_type": "Application"
+      },
+      "result_preview": "{\"activity\": \"A_Cancelled\", \"object_type\": \"Application\", \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.024
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_sojourn_time",
+      "args": {
+        "activity": "A_Cancelled",
+        "object_type": "Case_R"
+      },
+      "result_preview": "{\"activity\": \"A_Cancelled\", \"object_type\": \"Case_R\", \"median_s\": 0.0, \"mean_s\": 0.04, \"std_s\": 0.21, \"count\": 10431, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.09
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_pooling_time",
+      "args": {
+        "activity": "A_Cancelled",
+        "object_type": "Application"
+      },
+      "result_preview": "{\"activity\": \"A_Cancelled\", \"object_type\": \"Application\", \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.085
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_pooling_time",
+      "args": {
+        "activity": "A_Cancelled",
+        "object_type": "Case_R"
+      },
+      "result_preview": "{\"activity\": \"A_Cancelled\", \"object_type\": \"Case_R\", \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.134
+    },
+    {
+      "subtask_id": 2,
+      "tool": "get_lagging_time",
+      "args": {
+        "activity": "A_Cancelled",
+        "object_types": [
+          "Application",
+          "Case_R"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Cancelled\", \"object_types\": [\"Application\", \"Case_R\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.16
+    },
+    {
+      "subtask_id": 2,
+      "tool": "rank_activities_by_metric",
+      "args": {
+        "metric": "waiting",
+        "object_type": "Application",
+        "top_n": 10
+      },
+      "result_preview": "{\"metric\": \"waiting\", \"object_type\": \"Application\", \"ranking\": [{\"activity\": \"A_Cancelled\", \"median_s\": 2650735.0, \"mean_s\": 2309362.02, \"count\": 10431}, {\"activity\": \"A_Validating\", \"median_s\": 501617.5, \"mean_s\": 586572.24, \"count\": 38816}, {\"activity\": \"A_Denied\", \"median_s\": 171215.0, \"mean_s\": 247104.1, \"count\": 3753}, {\"activity\": \"A_Pending\", \"median_s\": 77798.0, \"mean_s\": 234223.88, \"count\": 17228}, {\"activity\": \"A_Accepted\", \"median_s\": 74586.0, \"mean_s\": 122505.07, \"count\": 31509}, {\"a",
+      "elapsed_s": 0.579
+    },
+    {
+      "subtask_id": 2,
+      "tool": "rank_activities_by_metric",
+      "args": {
+        "metric": "sojourn",
+        "object_type": "Application",
+        "top_n": 10
+      },
+      "result_preview": "{\"metric\": \"sojourn\", \"object_type\": \"Application\", \"ranking\": [{\"activity\": \"A_Complete\", \"median_s\": 861382.0, \"mean_s\": 1324080.71, \"count\": 31309}, {\"activity\": \"A_Incomplete\", \"median_s\": 94487.0, \"mean_s\": 345273.16, \"count\": 23013}, {\"activity\": \"A_Concept\", \"median_s\": 74586.0, \"mean_s\": 122505.07, \"count\": 31509}, {\"activity\": \"A_Validating\", \"median_s\": 74133.0, \"mean_s\": 146254.69, \"count\": 38813}, {\"activity\": \"A_Accepted\", \"median_s\": 265.0, \"mean_s\": 13072.98, \"count\": 31509}, {\"ac",
+      "elapsed_s": 0.566
+    },
+    {
+      "subtask_id": 2,
+      "tool": "rank_activities_by_metric",
+      "args": {
+        "metric": "pooling",
+        "object_type": "Application",
+        "top_n": 10
+      },
+      "result_preview": "{\"metric\": \"pooling\", \"object_type\": \"Application\", \"ranking\": [], \"total_activities_with_data\": 0}",
+      "elapsed_s": 2.65
+    },
+    {
+      "subtask_id": 2,
+      "tool": "rank_activities_by_metric",
+      "args": {
+        "metric": "waiting",
+        "object_type": "Case_R",
+        "top_n": 10
+      },
+      "result_preview": "{\"metric\": \"waiting\", \"object_type\": \"Case_R\", \"ranking\": [{\"activity\": \"A_Denied\", \"median_s\": 996.0, \"mean_s\": 8778.87, \"count\": 3751}, {\"activity\": \"A_Create Application\", \"median_s\": 736.0, \"mean_s\": 9625.1, \"count\": 31488}, {\"activity\": \"A_Accepted\", \"median_s\": 426.0, \"mean_s\": 9217.58, \"count\": 31498}, {\"activity\": \"O_Accepted\", \"median_s\": 254.0, \"mean_s\": 6663.93, \"count\": 17225}, {\"activity\": \"O_Create Offer\", \"median_s\": 186.0, \"mean_s\": 4633.85, \"count\": 42992}, {\"activity\": \"W_Handl",
+      "elapsed_s": 2.442
+    },
+    {
+      "subtask_id": 2,
+      "tool": "rank_activities_by_metric",
+      "args": {
+        "metric": "sojourn",
+        "object_type": "Case_R",
+        "top_n": 10
+      },
+      "result_preview": "{\"metric\": \"sojourn\", \"object_type\": \"Case_R\", \"ranking\": [{\"activity\": \"A_Concept\", \"median_s\": 252.0, \"mean_s\": 820.12, \"count\": 31509}, {\"activity\": \"O_Sent (online only)\", \"median_s\": 194.0, \"mean_s\": 13434.57, \"count\": 2021}, {\"activity\": \"A_Accepted\", \"median_s\": 182.0, \"mean_s\": 487.43, \"count\": 31509}, {\"activity\": \"O_Returned\", \"median_s\": 169.0, \"mean_s\": 1759.46, \"count\": 23303}, {\"activity\": \"A_Complete\", \"median_s\": 136.0, \"mean_s\": 3074.06, \"count\": 31356}, {\"activity\": \"W_Handle l",
+      "elapsed_s": 2.425
+    },
+    {
+      "subtask_id": 2,
+      "tool": "rank_activities_by_metric",
+      "args": {
+        "metric": "pooling",
+        "object_type": "Case_R",
+        "top_n": 10
+      },
+      "result_preview": "{\"metric\": \"pooling\", \"object_type\": \"Case_R\", \"ranking\": [], \"total_activities_with_data\": 0}",
+      "elapsed_s": 4.808
+    },
+    {
+      "subtask_id": 3,
+      "tool": "get_log_summary",
+      "args": {},
+      "result_preview": "{\"num_events\": 1202267, \"num_objects\": 106162, \"num_e2o_relations\": 2404534, \"num_o2o_relations\": 74504, \"object_types\": [\"Application\", \"Case_R\", \"Offer\", \"Workflow\"], \"activities\": [\"A_Accepted\", \"A_Cancelled\", \"A_Complete\", \"A_Concept\", \"A_Create Application\", \"A_Denied\", \"A_Incomplete\", \"A_Pending\", \"A_Submitted\", \"A_Validating\", \"O_Accepted\", \"O_Cancelled\", \"O_Create Offer\", \"O_Created\", \"O_Refused\", \"O_Returned\", \"O_Sent (mail and online)\", \"O_Sent (online only)\", \"W_Assess potential fraud",
+      "elapsed_s": 0.121
+    },
+    {
+      "subtask_id": 3,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "O_Create Offer"
+      },
+      "result_preview": "{\"activity\": \"O_Create Offer\", \"total_events\": 42995, \"patterns\": [{\"object_types\": [\"Case_R\", \"Offer\"], \"co_occurrence_count\": 42995, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Offer\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.719
+    },
+    {
+      "subtask_id": 4,
+      "tool": "get_log_summary",
+      "args": {},
+      "result_preview": "{\"num_events\": 1202267, \"num_objects\": 106162, \"num_e2o_relations\": 2404534, \"num_o2o_relations\": 74504, \"object_types\": [\"Application\", \"Case_R\", \"Offer\", \"Workflow\"], \"activities\": [\"A_Accepted\", \"A_Cancelled\", \"A_Complete\", \"A_Concept\", \"A_Create Application\", \"A_Denied\", \"A_Incomplete\", \"A_Pending\", \"A_Submitted\", \"A_Validating\", \"O_Accepted\", \"O_Cancelled\", \"O_Create Offer\", \"O_Created\", \"O_Refused\", \"O_Returned\", \"O_Sent (mail and online)\", \"O_Sent (online only)\", \"W_Assess potential fraud",
+      "elapsed_s": 0.108
+    },
+    {
+      "subtask_id": 4,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Complete",
+        "object_types": [
+          "Application",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Complete\", \"object_types\": [\"Application\", \"Workflow\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.176
+    },
+    {
+      "subtask_id": 4,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Validating",
+        "object_types": [
+          "Application",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Validating\", \"object_types\": [\"Application\", \"Workflow\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.167
+    },
+    {
+      "subtask_id": 4,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Create Offer",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Create Offer\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.114
+    },
+    {
+      "subtask_id": 4,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Created",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Created\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.132
+    },
+    {
+      "subtask_id": 4,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Validate application",
+        "object_types": [
+          "Application",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Validate application\", \"object_types\": [\"Application\", \"Workflow\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.503
+    },
+    {
+      "subtask_id": 4,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Complete application",
+        "object_types": [
+          "Application",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Complete application\", \"object_types\": [\"Application\", \"Workflow\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.365
+    },
+    {
+      "subtask_id": 4,
+      "tool": "correlation_object_count_vs_flow_time",
+      "args": {
+        "parent_type": "Application",
+        "child_type": "Offer"
+      },
+      "result_preview": "{\"parent_type\": \"Application\", \"child_type\": \"Offer\", \"pearson_r\": 0.2202, \"pearson_p\": 0.0, \"spearman_rho\": 0.1782, \"spearman_p\": 0.0, \"n\": 31509, \"child_count_stats\": {\"mean\": 1.36, \"median\": 1.0, \"min\": 1, \"max\": 10}, \"summary\": \"Positive correlation (r=0.220, p=0.0000) between Offer count and Application flow time.\"}",
+      "elapsed_s": 0.081
+    },
+    {
+      "subtask_id": 4,
+      "tool": "correlation_object_count_vs_flow_time",
+      "args": {
+        "parent_type": "Application",
+        "child_type": "Workflow"
+      },
+      "result_preview": "{\"parent_type\": \"Application\", \"child_type\": \"Workflow\", \"error\": \"Correlation undefined: constant input (zero variance)\", \"n\": 31509, \"child_count_unique\": 1}",
+      "elapsed_s": 0.04
+    },
+    {
+      "subtask_id": 4,
+      "tool": "compare_slow_vs_median",
+      "args": {
+        "object_type": "Application"
+      },
+      "result_preview": "{\"object_type\": \"Application\", \"slow_group\": {\"num_objects\": 3151, \"mean_events_per_object\": 8.31, \"median_flow_time_s\": 3656215.0, \"mean_flow_time_s\": 3990363.12, \"top_activities\": {\"A_Validating\": 4498, \"A_Incomplete\": 3577, \"A_Create Application\": 3151, \"A_Concept\": 3151, \"A_Accepted\": 3151, \"A_Complete\": 3151, \"A_Submitted\": 2380, \"A_Cancelled\": 1583, \"A_Pending\": 1355, \"A_Denied\": 202}}, \"median_group\": {\"num_objects\": 6301, \"mean_events_per_object\": 8.62, \"median_flow_time_s\": 1645576.0, \"",
+      "elapsed_s": 0.081
+    },
+    {
+      "subtask_id": 4,
+      "tool": "get_slowest_percentile",
+      "args": {
+        "object_type": "Application",
+        "percentile": 90
+      },
+      "result_preview": "{\"object_type\": \"Application\", \"percentile\": 90, \"threshold_s\": 3023425.0, \"count\": 3151, \"total_objects\": 31509, \"slowest_objects\": [{\"oid\": \"1229186\", \"flow_time_s\": 14604259.0, \"num_events\": 10}, {\"oid\": \"1232872\", \"flow_time_s\": 14521927.0, \"num_events\": 14}, {\"oid\": \"1211785\", \"flow_time_s\": 12603250.0, \"num_events\": 11}, {\"oid\": \"1207279\", \"flow_time_s\": 12055983.0, \"num_events\": 13}, {\"oid\": \"1226714\", \"flow_time_s\": 11772147.0, \"num_events\": 8}, {\"oid\": \"1203339\", \"flow_time_s\": 11709750",
+      "elapsed_s": 0.001
+    },
+    {
+      "subtask_id": 4,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "A_Complete"
+      },
+      "result_preview": "{\"activity\": \"A_Complete\", \"total_events\": 31362, \"patterns\": [{\"object_types\": [\"Application\", \"Case_R\"], \"co_occurrence_count\": 31362, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Application\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.399
+    },
+    {
+      "subtask_id": 4,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "A_Validating"
+      },
+      "result_preview": "{\"activity\": \"A_Validating\", \"total_events\": 38816, \"patterns\": [{\"object_types\": [\"Application\", \"Case_R\"], \"co_occurrence_count\": 38816, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Application\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.401
+    },
+    {
+      "subtask_id": 4,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "W_Validate application"
+      },
+      "result_preview": "{\"activity\": \"W_Validate application\", \"total_events\": 209496, \"patterns\": [{\"object_types\": [\"Case_R\", \"Workflow\"], \"co_occurrence_count\": 209496, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Workflow\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 1.923
+    },
+    {
+      "subtask_id": 4,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "O_Create Offer"
+      },
+      "result_preview": "{\"activity\": \"O_Create Offer\", \"total_events\": 42995, \"patterns\": [{\"object_types\": [\"Case_R\", \"Offer\"], \"co_occurrence_count\": 42995, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Offer\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.532
+    },
+    {
+      "subtask_id": 4,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "O_Created"
+      },
+      "result_preview": "{\"activity\": \"O_Created\", \"total_events\": 42995, \"patterns\": [{\"object_types\": [\"Case_R\", \"Offer\"], \"co_occurrence_count\": 42995, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Offer\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.454
+    },
+    {
+      "subtask_id": 5,
+      "tool": "get_log_summary",
+      "args": {},
+      "result_preview": "{\"num_events\": 1202267, \"num_objects\": 106162, \"num_e2o_relations\": 2404534, \"num_o2o_relations\": 74504, \"object_types\": [\"Application\", \"Case_R\", \"Offer\", \"Workflow\"], \"activities\": [\"A_Accepted\", \"A_Cancelled\", \"A_Complete\", \"A_Concept\", \"A_Create Application\", \"A_Denied\", \"A_Incomplete\", \"A_Pending\", \"A_Submitted\", \"A_Validating\", \"O_Accepted\", \"O_Cancelled\", \"O_Create Offer\", \"O_Created\", \"O_Refused\", \"O_Returned\", \"O_Sent (mail and online)\", \"O_Sent (online only)\", \"W_Assess potential fraud",
+      "elapsed_s": 0.105
+    },
+    {
+      "subtask_id": 5,
+      "tool": "correlation_object_count_vs_flow_time",
+      "args": {
+        "parent_type": "Application",
+        "child_type": "Offer"
+      },
+      "result_preview": "{\"parent_type\": \"Application\", \"child_type\": \"Offer\", \"pearson_r\": 0.2202, \"pearson_p\": 0.0, \"spearman_rho\": 0.1782, \"spearman_p\": 0.0, \"n\": 31509, \"child_count_stats\": {\"mean\": 1.36, \"median\": 1.0, \"min\": 1, \"max\": 10}, \"summary\": \"Positive correlation (r=0.220, p=0.0000) between Offer count and Application flow time.\"}",
+      "elapsed_s": 0.12
+    },
+    {
+      "subtask_id": 5,
+      "tool": "correlation_object_count_vs_flow_time",
+      "args": {
+        "parent_type": "Application",
+        "child_type": "Workflow"
+      },
+      "result_preview": "{\"parent_type\": \"Application\", \"child_type\": \"Workflow\", \"error\": \"Correlation undefined: constant input (zero variance)\", \"n\": 31509, \"child_count_unique\": 1}",
+      "elapsed_s": 0.038
+    },
+    {
+      "subtask_id": 5,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "W_Call after offers"
+      },
+      "result_preview": "{\"activity\": \"W_Call after offers\", \"total_events\": 191092, \"patterns\": [{\"object_types\": [\"Case_R\", \"Workflow\"], \"co_occurrence_count\": 191092, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Workflow\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 2.159
+    },
+    {
+      "subtask_id": 5,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Call after offers",
+        "object_types": [
+          "Application",
+          "Offer",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Call after offers\", \"object_types\": [\"Application\", \"Offer\", \"Workflow\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.525
+    },
+    {
+      "subtask_id": 5,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Call after offers",
+        "object_types": [
+          "Case_R",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Call after offers\", \"object_types\": [\"Case_R\", \"Workflow\"], \"median_s\": 0.0, \"mean_s\": 216474.84, \"std_s\": 532909.65, \"count\": 191070, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.994
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_log_summary",
+      "args": {},
+      "result_preview": "{\"num_events\": 1202267, \"num_objects\": 106162, \"num_e2o_relations\": 2404534, \"num_o2o_relations\": 74504, \"object_types\": [\"Application\", \"Case_R\", \"Offer\", \"Workflow\"], \"activities\": [\"A_Accepted\", \"A_Cancelled\", \"A_Complete\", \"A_Concept\", \"A_Create Application\", \"A_Denied\", \"A_Incomplete\", \"A_Pending\", \"A_Submitted\", \"A_Validating\", \"O_Accepted\", \"O_Cancelled\", \"O_Create Offer\", \"O_Created\", \"O_Refused\", \"O_Returned\", \"O_Sent (mail and online)\", \"O_Sent (online only)\", \"W_Assess potential fraud",
+      "elapsed_s": 0.134
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Create Offer",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Create Offer\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.255
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Created",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Created\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.15
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Sent (mail and online)",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Sent (mail and online)\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.133
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Sent (online only)",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Sent (online only)\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.066
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Returned",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Returned\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.12
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Accepted",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Accepted\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.089
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Complete application",
+        "object_types": [
+          "Application",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Complete application\", \"object_types\": [\"Application\", \"Workflow\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.382
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Validate application",
+        "object_types": [
+          "Application",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Validate application\", \"object_types\": [\"Application\", \"Workflow\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.501
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Call after offers",
+        "object_types": [
+          "Application",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Call after offers\", \"object_types\": [\"Application\", \"Workflow\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.526
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Complete",
+        "object_types": [
+          "Application",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Complete\", \"object_types\": [\"Application\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.108
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_activity_frequency",
+      "args": {
+        "object_type": "Application"
+      },
+      "result_preview": "{\"object_type\": \"Application\", \"total_events\": 239595, \"frequencies\": [{\"activity\": \"A_Validating\", \"count\": 38816, \"pct\": 16.2}, {\"activity\": \"A_Create Application\", \"count\": 31509, \"pct\": 13.15}, {\"activity\": \"A_Concept\", \"count\": 31509, \"pct\": 13.15}, {\"activity\": \"A_Accepted\", \"count\": 31509, \"pct\": 13.15}, {\"activity\": \"A_Complete\", \"count\": 31362, \"pct\": 13.09}, {\"activity\": \"A_Incomplete\", \"count\": 23055, \"pct\": 9.62}, {\"activity\": \"A_Submitted\", \"count\": 20423, \"pct\": 8.52}, {\"activity\":",
+      "elapsed_s": 0.066
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_activity_frequency",
+      "args": {
+        "object_type": "Offer"
+      },
+      "result_preview": "{\"object_type\": \"Offer\", \"total_events\": 193849, \"frequencies\": [{\"activity\": \"O_Create Offer\", \"count\": 42995, \"pct\": 22.18}, {\"activity\": \"O_Created\", \"count\": 42995, \"pct\": 22.18}, {\"activity\": \"O_Sent (mail and online)\", \"count\": 39707, \"pct\": 20.48}, {\"activity\": \"O_Returned\", \"count\": 23305, \"pct\": 12.02}, {\"activity\": \"O_Cancelled\", \"count\": 20898, \"pct\": 10.78}, {\"activity\": \"O_Accepted\", \"count\": 17228, \"pct\": 8.89}, {\"activity\": \"O_Refused\", \"count\": 4695, \"pct\": 2.42}, {\"activity\": \"O",
+      "elapsed_s": 0.028
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_activity_frequency",
+      "args": {
+        "object_type": "Workflow"
+      },
+      "result_preview": "{\"object_type\": \"Workflow\", \"total_events\": 768823, \"frequencies\": [{\"activity\": \"W_Validate application\", \"count\": 209496, \"pct\": 27.25}, {\"activity\": \"W_Call after offers\", \"count\": 191092, \"pct\": 24.86}, {\"activity\": \"W_Call incomplete files\", \"count\": 168529, \"pct\": 21.92}, {\"activity\": \"W_Complete application\", \"count\": 148900, \"pct\": 19.37}, {\"activity\": \"W_Handle leads\", \"count\": 47264, \"pct\": 6.15}, {\"activity\": \"W_Assess potential fraud\", \"count\": 3282, \"pct\": 0.43}, {\"activity\": \"W_Sho",
+      "elapsed_s": 0.111
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_activity_frequency",
+      "args": {
+        "object_type": "Case_R"
+      },
+      "result_preview": "{\"object_type\": \"Case_R\", \"total_events\": 1202267, \"frequencies\": [{\"activity\": \"W_Validate application\", \"count\": 209496, \"pct\": 17.43}, {\"activity\": \"W_Call after offers\", \"count\": 191092, \"pct\": 15.89}, {\"activity\": \"W_Call incomplete files\", \"count\": 168529, \"pct\": 14.02}, {\"activity\": \"W_Complete application\", \"count\": 148900, \"pct\": 12.38}, {\"activity\": \"W_Handle leads\", \"count\": 47264, \"pct\": 3.93}, {\"activity\": \"O_Create Offer\", \"count\": 42995, \"pct\": 3.58}, {\"activity\": \"O_Created\", \"co",
+      "elapsed_s": 0.137
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "W_Call after offers"
+      },
+      "result_preview": "{\"activity\": \"W_Call after offers\", \"total_events\": 191092, \"patterns\": [{\"object_types\": [\"Case_R\", \"Workflow\"], \"co_occurrence_count\": 191092, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Workflow\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 1.984
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "W_Validate application"
+      },
+      "result_preview": "{\"activity\": \"W_Validate application\", \"total_events\": 209496, \"patterns\": [{\"object_types\": [\"Case_R\", \"Workflow\"], \"co_occurrence_count\": 209496, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Workflow\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 1.93
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "O_Create Offer"
+      },
+      "result_preview": "{\"activity\": \"O_Create Offer\", \"total_events\": 42995, \"patterns\": [{\"object_types\": [\"Case_R\", \"Offer\"], \"co_occurrence_count\": 42995, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Offer\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.546
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "A_Complete"
+      },
+      "result_preview": "{\"activity\": \"A_Complete\", \"total_events\": 31362, \"patterns\": [{\"object_types\": [\"Application\", \"Case_R\"], \"co_occurrence_count\": 31362, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Application\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.333
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "O_Accepted"
+      },
+      "result_preview": "{\"activity\": \"O_Accepted\", \"total_events\": 17228, \"patterns\": [{\"object_types\": [\"Case_R\", \"Offer\"], \"co_occurrence_count\": 17228, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Offer\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.223
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Call after offers",
+        "object_types": [
+          "Case_R",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Call after offers\", \"object_types\": [\"Case_R\", \"Workflow\"], \"median_s\": 0.0, \"mean_s\": 216474.84, \"std_s\": 532909.65, \"count\": 191070, \"unit\": \"seconds\"}",
+      "elapsed_s": 1.104
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "W_Validate application",
+        "object_types": [
+          "Case_R",
+          "Workflow"
+        ]
+      },
+      "result_preview": "{\"activity\": \"W_Validate application\", \"object_types\": [\"Case_R\", \"Workflow\"], \"median_s\": 0.0, \"mean_s\": 26339.41, \"std_s\": 90426.26, \"count\": 209479, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.89
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Create Offer",
+        "object_types": [
+          "Case_R",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Create Offer\", \"object_types\": [\"Case_R\", \"Offer\"], \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.194
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "A_Complete",
+        "object_types": [
+          "Application",
+          "Case_R"
+        ]
+      },
+      "result_preview": "{\"activity\": \"A_Complete\", \"object_types\": [\"Application\", \"Case_R\"], \"median_s\": 264.0, \"mean_s\": 11357.3, \"std_s\": 95310.82, \"count\": 31362, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.165
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_synchronization_time",
+      "args": {
+        "activity": "O_Accepted",
+        "object_types": [
+          "Case_R",
+          "Offer"
+        ]
+      },
+      "result_preview": "{\"activity\": \"O_Accepted\", \"object_types\": [\"Case_R\", \"Offer\"], \"median_s\": 349009.0, \"mean_s\": 512817.76, \"std_s\": 602662.27, \"count\": 17225, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.152
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_waiting_time",
+      "args": {
+        "activity": "O_Accepted",
+        "object_type": "Offer"
+      },
+      "result_preview": "{\"activity\": \"O_Accepted\", \"object_type\": \"Offer\", \"median_s\": 351415.5, \"mean_s\": 516152.18, \"std_s\": 602833.89, \"p25_s\": 100857.0, \"p75_s\": 632269.0, \"count\": 17228, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.051
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_sojourn_time",
+      "args": {
+        "activity": "O_Accepted",
+        "object_type": "Offer"
+      },
+      "result_preview": "{\"activity\": \"O_Accepted\", \"object_type\": \"Offer\", \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.019
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_pooling_time",
+      "args": {
+        "activity": "O_Accepted",
+        "object_type": "Offer"
+      },
+      "result_preview": "{\"activity\": \"O_Accepted\", \"object_type\": \"Offer\", \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.069
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_waiting_time",
+      "args": {
+        "activity": "O_Accepted",
+        "object_type": "Case_R"
+      },
+      "result_preview": "{\"activity\": \"O_Accepted\", \"object_type\": \"Case_R\", \"median_s\": 254.0, \"mean_s\": 6663.93, \"std_s\": 61173.56, \"p25_s\": 86.0, \"p75_s\": 989.0, \"count\": 17225, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.094
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_sojourn_time",
+      "args": {
+        "activity": "O_Accepted",
+        "object_type": "Case_R"
+      },
+      "result_preview": "{\"activity\": \"O_Accepted\", \"object_type\": \"Case_R\", \"median_s\": 0.0, \"mean_s\": 0.01, \"std_s\": 0.09, \"count\": 17228, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.091
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_pooling_time",
+      "args": {
+        "activity": "O_Accepted",
+        "object_type": "Case_R"
+      },
+      "result_preview": "{\"activity\": \"O_Accepted\", \"object_type\": \"Case_R\", \"median_s\": null, \"mean_s\": null, \"std_s\": null, \"count\": 0, \"unit\": \"seconds\"}",
+      "elapsed_s": 0.121
+    },
+    {
+      "subtask_id": 6,
+      "tool": "get_object_interaction_patterns",
+      "args": {
+        "activity": "O_Accepted"
+      },
+      "result_preview": "{\"activity\": \"O_Accepted\", \"total_events\": 17228, \"patterns\": [{\"object_types\": [\"Case_R\", \"Offer\"], \"co_occurrence_count\": 17228, \"pct\": 100.0}], \"objects_per_event_by_type\": {\"Case_R\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}, \"Offer\": {\"mean\": 1.0, \"median\": 1.0, \"max\": 1}}}",
+      "elapsed_s": 0.228
+    },
+    {
+      "subtask_id": 6,
+      "tool": "compare_slow_vs_median",
+      "args": {
+        "object_type": "Offer"
+      },
+      "result_preview": "{\"object_type\": \"Offer\", \"slow_group\": {\"num_objects\": 4300, \"mean_events_per_object\": 4.42, \"median_flow_time_s\": 3283889.0, \"mean_flow_time_s\": 3640394.29, \"top_activities\": {\"O_Create Offer\": 4300, \"O_Created\": 4300, \"O_Sent (mail and online)\": 4109, \"O_Cancelled\": 2959, \"O_Returned\": 1862, \"O_Accepted\": 1065, \"O_Refused\": 276, \"O_Sent (online only)\": 154}}, \"median_group\": {\"num_objects\": 8599, \"mean_events_per_object\": 4.78, \"median_flow_time_s\": 1372916.0, \"mean_flow_time_s\": 1409075.28, \"",
+      "elapsed_s": 0.082
+    },
+    {
+      "subtask_id": 6,
+      "tool": "compare_slow_vs_median",
+      "args": {
+        "object_type": "Application"
+      },
+      "result_preview": "{\"object_type\": \"Application\", \"slow_group\": {\"num_objects\": 3151, \"mean_events_per_object\": 8.31, \"median_flow_time_s\": 3656215.0, \"mean_flow_time_s\": 3990363.12, \"top_activities\": {\"A_Validating\": 4498, \"A_Incomplete\": 3577, \"A_Create Application\": 3151, \"A_Concept\": 3151, \"A_Accepted\": 3151, \"A_Complete\": 3151, \"A_Submitted\": 2380, \"A_Cancelled\": 1583, \"A_Pending\": 1355, \"A_Denied\": 202}}, \"median_group\": {\"num_objects\": 6301, \"mean_events_per_object\": 8.62, \"median_flow_time_s\": 1645576.0, \"",
+      "elapsed_s": 0.089
+    },
+    {
+      "subtask_id": 6,
+      "tool": "correlation_object_count_vs_flow_time",
+      "args": {
+        "parent_type": "Application",
+        "child_type": "Offer"
+      },
+      "result_preview": "{\"parent_type\": \"Application\", \"child_type\": \"Offer\", \"pearson_r\": 0.2202, \"pearson_p\": 0.0, \"spearman_rho\": 0.1782, \"spearman_p\": 0.0, \"n\": 31509, \"child_count_stats\": {\"mean\": 1.36, \"median\": 1.0, \"min\": 1, \"max\": 10}, \"summary\": \"Positive correlation (r=0.220, p=0.0000) between Offer count and Application flow time.\"}",
+      "elapsed_s": 0.056
+    },
+    {
+      "subtask_id": 6,
+      "tool": "correlation_object_count_vs_flow_time",
+      "args": {
+        "parent_type": "Application",
+        "child_type": "Workflow"
+      },
+      "result_preview": "{\"parent_type\": \"Application\", \"child_type\": \"Workflow\", \"error\": \"Correlation undefined: constant input (zero variance)\", \"n\": 31509, \"child_count_unique\": 1}",
+      "elapsed_s": 0.038
+    },
+    {
+      "subtask_id": 6,
+      "tool": "rank_activities_by_metric",
+      "args": {
+        "metric": "waiting",
+        "object_type": "Offer",
+        "top_n": 5
+      },
+      "result_preview": "{\"metric\": \"waiting\", \"object_type\": \"Offer\", \"ranking\": [{\"activity\": \"O_Cancelled\", \"median_s\": 2635680.0, \"mean_s\": 1963546.2, \"count\": 20898}, {\"activity\": \"O_Returned\", \"median_s\": 609943.0, \"mean_s\": 765101.7, \"count\": 23305}, {\"activity\": \"O_Refused\", \"median_s\": 423518.0, \"mean_s\": 634207.35, \"count\": 4695}, {\"activity\": \"O_Accepted\", \"median_s\": 351415.5, \"mean_s\": 516152.18, \"count\": 17228}, {\"activity\": \"O_Sent (mail and online)\", \"median_s\": 28.0, \"mean_s\": 1592.32, \"count\": 39707}],",
+      "elapsed_s": 0.338
+    },
+    {
+      "subtask_id": 6,
+      "tool": "rank_activities_by_metric",
+      "args": {
+        "metric": "waiting",
+        "object_type": "Case_R",
+        "top_n": 5
+      },
+      "result_preview": "{\"metric\": \"waiting\", \"object_type\": \"Case_R\", \"ranking\": [{\"activity\": \"A_Denied\", \"median_s\": 996.0, \"mean_s\": 8778.87, \"count\": 3751}, {\"activity\": \"A_Create Application\", \"median_s\": 736.0, \"mean_s\": 9625.1, \"count\": 31488}, {\"activity\": \"A_Accepted\", \"median_s\": 426.0, \"mean_s\": 9217.58, \"count\": 31498}, {\"activity\": \"O_Accepted\", \"median_s\": 254.0, \"mean_s\": 6663.93, \"count\": 17225}, {\"activity\": \"O_Create Offer\", \"median_s\": 186.0, \"mean_s\": 4633.85, \"count\": 42992}], \"total_activities_wi",
+      "elapsed_s": 2.442
+    }
+  ],
+  "num_tool_calls": 155,
+  "timestamps": {
+    "start": 1777858328.53172,
+    "planner_done": 1777858338.754215,
+    "end": 1777858729.00836
+  },
+  "latency_s": 400.477,
+  "task_id": "B4",
+  "category": "B",
+  "error": null,
+  "timed_out": false,
+  "run_index": 2
+}

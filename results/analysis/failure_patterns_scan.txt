@@ -1,0 +1,108 @@
+==============================================================================
+Multi-agent failure pattern scan (36 runs)
+==============================================================================
+
+Source : results/runs/all_results.json
+Filter : mode == 'multi_agent'
+
+------------------------------------------------------------------------------
+Aggregate statistics
+------------------------------------------------------------------------------
+  n_runs                       : 36
+  tool calls       mean/median : 60.08 / 49.0
+  tool errors      mean        : 1.06
+  tool error rate  mean        : 1.8%
+  empty subtasks   mean / total: 2.03 / 73
+  limitation hits  mean        : 2.31
+  runs with >=1 limitation hit : 29
+  runs with short final answer : 0  (< 200 chars)
+  latency (s)      mean/median : 201.6 / 201.7
+  timed_out runs               : 0
+
+------------------------------------------------------------------------------
+Per-run signals
+------------------------------------------------------------------------------
+  run_id          cat  tools  errs   err%  st  empty  lim  ans_len  lat(s)
+  A1_run0          A      6     0    0.0   3      0    0      620    49.7
+  A1_run1          A      7     0    0.0   4      0    0      713    40.9
+  A1_run2          A      8     0    0.0   4      0    0      536    71.5
+  A2_run0          A     17     0    0.0   4      1    1     2797    80.8
+  A2_run1          A     16     0    0.0   4      2    1     3140    81.1
+  A2_run2          A     20     0    0.0   4      1    1     2972    84.8
+  A3_run0          A     92     0    0.0   4      0    0     1551   136.9
+  A3_run1          A    108     1    0.9   4      2    1     1344   135.0
+  A3_run2          A     80     0    0.0   4      2    0     1476   136.0
+  A4_run0          A      6     0    0.0   3      0    2     2121    62.3
+  A4_run1          A      5     0    0.0   3      0    1     2404    51.1
+  A4_run2          A      6     0    0.0   3      0    1     1331    44.0
+  B1_run0          B     78     3    3.8   6      4    4    11493   297.3
+  B1_run1          B     69     2    2.9   5      2    3    14179   232.6
+  B1_run2          B     69     2    2.9   5      2    2    11099   261.2
+  B2_run0          B     12     0    0.0   4      3    6     5476    85.6
+  B2_run1          B      9     0    0.0   5      1    2     3870    90.7
+  B2_run2          B     14     0    0.0   5      0    1     4135   102.0
+  B3_run0          B     44     2    4.5   5      3    4     8399   185.8
+  B3_run1          B     29     2    6.9   5      4    3    11461   168.5
+  B3_run2          B     18     2   11.1   5      2    4     7769   148.8
+  B4_run0          B    116     3    2.6   6      4    3    11268   296.0
+  B4_run1          B     88     2    2.3   6      3    4    13094   268.1
+  B4_run2          B    155     3    1.9   6      4    4     9487   400.5
+  C1_run0          C     43     2    4.7   5      1    1     9958   218.8
+  C1_run1          C     46     1    2.2   5      0    0    10504   217.6
+  C1_run2          C     59     1    1.7   5      3    2    12247   225.5
+  C2_run0          C    152     1    0.7   6      2    2    15391   371.6
+  C2_run1          C    131     1    0.8   6      4    1    16865   370.2
+  C2_run2          C    147     1    0.7   6      5    2    16295   403.4
+  C3_run0          C    147     2    1.4   6      3    2    15220   404.3
+  C3_run1          C     85     0    0.0   6      1    1    10572   360.1
+  C3_run2          C     83     2    2.4   6      3    0    11965   335.8
+  C4_run0          C     40     2    5.0   6      3    7     7969   220.9
+  C4_run1          C     52     1    1.9   6      3   12    11834   258.8
+  C4_run2          C    106     2    1.9   6      5    5    10455   360.0
+
+==============================================================================
+Theme A — Tool exploration overhead
+==============================================================================
+  Definition: tool_calls / subtask_count >= 20 AND (>=1 tool error OR >=1 empty subtask).
+  Interpretation: the agent fires many tool calls per subtask (top of the distribution) yet still leaves subtasks empty or hits tool errors — exploration without payoff.
+  Match count: 7
+  Top 5 offenders:
+  - A3_run1 (cat A)  tools=108 errs=  1 (  0.9%)  subtasks=4 empty=2  limhits=1  ans_len= 1344  lat= 135.0s  cps=27.0
+  - B4_run2 (cat B)  tools=155 errs=  3 (  1.9%)  subtasks=6 empty=4  limhits=4  ans_len= 9487  lat= 400.5s  cps=25.8
+  - C2_run0 (cat C)  tools=152 errs=  1 (  0.7%)  subtasks=6 empty=2  limhits=2  ans_len=15391  lat= 371.6s  cps=25.3
+  - C3_run0 (cat C)  tools=147 errs=  2 (  1.4%)  subtasks=6 empty=3  limhits=2  ans_len=15220  lat= 404.3s  cps=24.5
+  - C2_run2 (cat C)  tools=147 errs=  1 (  0.7%)  subtasks=6 empty=5  limhits=2  ans_len=16295  lat= 403.4s  cps=24.5
+
+  Illustrative example: A3_run1 — 108 tool calls across 4 subtasks (27.0 per subtask) with 2 empty subtasks and 1 tool errors.
+
+==============================================================================
+Theme B — Synthesis under partial data
+==============================================================================
+  Definition: >=1 empty/failed subtask AND final answer is non-trivial (>= 200 chars)
+  AND the final answer contains no self-acknowledged limitation.
+  Interpretation: the agent produces confident-sounding output despite missing intermediate findings.
+  Match count: 2
+  Top 5 offenders:
+  - C3_run2 (cat C)  tools= 83 errs=  2 (  2.4%)  subtasks=6 empty=3  limhits=0  ans_len=11965  lat= 335.8s
+  - A3_run2 (cat A)  tools= 80 errs=  0 (  0.0%)  subtasks=4 empty=2  limhits=0  ans_len= 1476  lat= 136.0s
+
+  Illustrative example: C3_run2 — 3/6 subtasks empty yet the final answer is 11965 chars with zero limitation markers.
+
+==============================================================================
+Theme C — Self-acknowledged limitations
+==============================================================================
+  Definition: final answer contains >=1 limitation marker ("no result", "unable", "could not", ...).
+  Interpretation: GOOD agent behaviour — the assistant flags what it cannot answer instead of fabricating.
+  Match count: 29
+  Top 5 offenders:
+  - C4_run1 (cat C)  tools= 52 errs=  1 (  1.9%)  subtasks=6 empty=3  limhits=12  ans_len=11834  lat= 258.8s
+  - C4_run0 (cat C)  tools= 40 errs=  2 (  5.0%)  subtasks=6 empty=3  limhits=7  ans_len= 7969  lat= 220.9s
+  - B2_run0 (cat B)  tools= 12 errs=  0 (  0.0%)  subtasks=4 empty=3  limhits=6  ans_len= 5476  lat=  85.6s
+  - C4_run2 (cat C)  tools=106 errs=  2 (  1.9%)  subtasks=6 empty=5  limhits=5  ans_len=10455  lat= 360.0s
+  - B1_run0 (cat B)  tools= 78 errs=  3 (  3.8%)  subtasks=6 empty=4  limhits=4  ans_len=11493  lat= 297.3s
+
+  Illustrative example: C4_run1 — final answer flags the gap 12 times across 11834 chars.
+
+==============================================================================
+End of scan
+==============================================================================

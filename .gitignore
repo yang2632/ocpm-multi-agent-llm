@@ -1,0 +1,70 @@
+# Secrets
+.env
+.env.local
+*.key
+
+# Data — too large for GitHub; see DATA.md for retrieval
+data/
+*.csv.gz
+*.parquet
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+venv/
+ENV/
+env/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# Backup / archive directories (intermediate results, not for distribution)
+results/runs_gpt54_backup/
+results/runs_gpt55_v1_backup/
+results/runs_pilot_archive_*/
+results/scores_backup_*/
+results_pre_final_backup_*/
+*_backup/
+*_backup_*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/*.log
+
+# Claude / dev artifacts
+.claude/
+*.tmp
