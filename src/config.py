@@ -22,10 +22,11 @@ class Config:
     gemini_api_key: str = ""
     gemini_base_url: str = ""  # Custom endpoint for Gemini
     llm_provider: str = "openai"  # "openai" or "gemini"
-    llm_model: str = "gpt-4o"
+    # Defaults below match the thesis evaluation (gpt-5.5, 600s timeout); see results/run_manifest.json.
+    llm_model: str = "gpt-5.5"
     temperature: float = 0.0
     max_tokens: int = 4096
-    task_timeout_s: int = 120
+    task_timeout_s: int = 600
     runs_per_task: int = 3
     data_path: Path = field(default_factory=lambda: DATA_DIR)
 
@@ -42,10 +43,10 @@ class Config:
             gemini_api_key=os.getenv("GEMINI_API_KEY", ""),
             gemini_base_url=os.getenv("GEMINI_BASE_URL", ""),
             llm_provider=os.getenv("LLM_PROVIDER", "openai"),
-            llm_model=os.getenv("LLM_MODEL", "gpt-4o"),
+            llm_model=os.getenv("LLM_MODEL", "gpt-5.5"),
             temperature=float(os.getenv("LLM_TEMPERATURE", "0.0")),
             max_tokens=int(os.getenv("LLM_MAX_TOKENS", "4096")),
-            task_timeout_s=int(os.getenv("TASK_TIMEOUT_S", "120")),
+            task_timeout_s=int(os.getenv("TASK_TIMEOUT_S", "600")),
             runs_per_task=int(os.getenv("RUNS_PER_TASK", "3")),
             data_path=Path(os.getenv("DATA_PATH", str(DATA_DIR))),
         )
