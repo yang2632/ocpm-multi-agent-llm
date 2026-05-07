@@ -13,10 +13,13 @@
 - **Traceability** (0/1/2): Same as Category A
 
 ### Ground Truth Reference (Category A)
-- **A1**: Highest median sojourn for Application = `A_Complete` (861,382s)
-- **A2**: Top 3 frequency activities for Offer, then compare waiting times
-- **A3**: Activity with highest sync time between Application + Offer
-- **A4**: Pooling time at first convergence activity for Application + Offer
+- **A1**: Highest median sojourn for Application = `A_Complete` (861,382 s ≈ 9.97 days, n=31,309)
+- **A2**: Top-3 frequency activities for Offer, then compare sojourn-time distributions
+        (O_Create Offer: 1 s; O_Created: 29 s; O_Sent (mail and online): 941,202 s ≈ 10.9 days)
+- **A3**: Activity with highest median synchronization time between Application + Case_R
+        = `A_Cancelled` (2,650,388.5 s ≈ 30.7 days, n=10,430)
+- **A4**: Median lagging time at `A_Complete` between Application and Case_R
+        = 860,588 s ≈ 9.96 days, n=31,303
 
 ---
 
