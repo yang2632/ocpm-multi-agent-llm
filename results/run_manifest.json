@@ -1,0 +1,25 @@
+{
+  "manifest_version": "1.0",
+  "description": "Shared LLM and decoding configuration that produced the 72 archived runs in results/runs/. Per-run traces themselves do not include these fields; the manifest documents them centrally for reproducibility.",
+  "thesis_evaluation": {
+    "llm_provider": "openai",
+    "llm_model": "gpt-5.5",
+    "llm_temperature": 0.0,
+    "llm_max_tokens": 4096,
+    "task_timeout_seconds": 600,
+    "runs_per_task": 3,
+    "total_runs": 72,
+    "tasks": 12,
+    "task_categories": ["A", "B", "C"],
+    "tasks_per_category": 4,
+    "architectures": ["single_agent", "multi_agent"],
+    "dataset_doi": "10.4121/uuid:5f3067df-f10b-45da-b98b-86ae4c7a310b",
+    "dataset_label": "BPI Challenge 2017 (Loan Application), converted to OCEL 2.0",
+    "object_types": ["Application", "Offer", "Workflow", "Case_R"],
+    "execution_period": "2026-04 to 2026-05"
+  },
+  "notes": [
+    "These parameters were frozen before execution; see thesis Method §3.7 (Implementation Protocol).",
+    "The .env.example defaults are illustrative for new installations and may differ; set LLM_MODEL=gpt-5.5 and TASK_TIMEOUT_S=600 to reproduce the thesis runs."
+  ]
+}

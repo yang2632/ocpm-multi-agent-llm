@@ -70,15 +70,14 @@ uv run python -m src.eval.analysis
 
 ## Reproducibility
 
-All execution parameters are recorded in each run's JSON trace:
+Each run trace records:
 
 - Task ID, architecture mode, replication index
 - Full tool-call sequence with arguments and return summaries
 - Intermediate planner/analyst/synthesizer messages
 - Final answer string + wall-clock latency
-- LLM model + temperature + decoding parameters
 
-The 72 traces in `results/runs/` are the exact runs analysed in the thesis.
+The shared LLM/decoding configuration that produced the 72 archived runs is documented in [`results/run_manifest.json`](results/run_manifest.json) (model, temperature, max-token, timeout). The 72 traces in `results/runs/` are the exact runs analysed in the thesis.
 
 ## How the thesis uses this artifact
 
