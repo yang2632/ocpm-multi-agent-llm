@@ -1,9 +1,14 @@
 """Comparative analysis of single-agent vs multi-agent results.
 
 Produces:
-- results/analysis/stats.json (per-dimension Wilcoxon + Cliff's delta + means)
+- results/analysis/stats.json (per-dimension means, standard deviations, mean
+  differences, plus exploratory Wilcoxon W/p and Cliff's delta values that are
+  retained for transparency but NOT reported in the thesis; see README for why
+  the thesis frame is descriptive-only at n = 4 task-level observations per
+  category with replications sharing within-task variance)
 - results/analysis/pass_fail.json (pass rates per category vs ACCEPTANCE_THRESHOLDS)
-- results/analysis/inter_rater_kappa.json (Cohen's kappa per dimension)
+- results/analysis/inter_rater_kappa.json (paired-agreement percentages per
+  dimension; Cohen's kappa is computed but not reported in the thesis)
 - results/analysis/box_plots.png (per-metric paired box plots, B/C only)
 - results/analysis/latency_tools.png (latency + tool count box plots)
 

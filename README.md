@@ -82,7 +82,9 @@ The 72 traces in `results/runs/` are the exact runs analysed in the thesis.
 
 ## How the thesis uses this artifact
 
-The thesis reports descriptive statistics (means, standard deviations, mean differences) on rubric-scored quality dimensions plus operational cost ratios (latency, tool calls). It complements the quantitative comparison with a qualitative thematic analysis of the 36 multi-agent runs, identifying three recurring patterns: tool-exploration overhead, synthesis under partial data, and graceful degradation.
+The thesis reports **descriptive statistics** (means, standard deviations, mean differences) on rubric-scored quality dimensions plus operational cost ratios (latency, tool calls). It complements the quantitative comparison with a qualitative thematic analysis of the 36 multi-agent runs, identifying three recurring patterns: tool-exploration overhead, synthesis under partial data, and graceful degradation.
+
+> **Note on the analysis script**: `src/eval/analysis.py` also emits exploratory Wilcoxon signed-rank and Cliff's delta values into `stats.json`. These are retained for transparency but are **not** reported in the thesis, because at the actual unit of analysis (4 tasks per category × 3 replications, where replications share within-task variance) the strict independence and symmetric-distribution assumptions underlying paired non-parametric tests do not cleanly hold. The thesis therefore relies on descriptive comparison + cost ratios + qualitative themes as the primary analytic frame.
 
 ## Citation
 
