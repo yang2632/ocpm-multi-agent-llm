@@ -197,6 +197,13 @@ def main() -> None:
     score_map = {
         (r["task_id"], r["mode"], int(r["run_index"])): r for r in scores
     }
+    # Task IDs per category, derived from the data (dataset-agnostic: works for
+    # BPI 'A1'..'C4' and OM 'OM-A1'..'OM-C4' alike).
+    cat_tids: dict[str, list[str]] = {}
+    for r in scores:
+        cat_tids.setdefault(r.get("category", ""), [])
+        if r["task_id"] not in cat_tids[r["category"]]:
+            cat_tids[r["category"]].append(r["task_id"])
     latency_map = {
         (r["task_id"], r["mode"], r["run_index"]): r.get("latency_s", 0.0) for r in runs
     }
@@ -210,14 +217,14 @@ def main() -> None:
     # Category A: closed-answer tasks (correctness + traceability only)
     for dim in DIMS_A:
         single_vals, multi_vals = _collect_pairs(
-            score_map, [f"A{i}" for i in range(1, 5)], dim
+            score_map, cat_tids.get("A", []), dim
         )
         if len(single_vals) >= 6:
             results[f"A_{dim}"] = _summarize_pair(single_vals, multi_vals)
 
     # Category B and C: open-answer tasks (all four B/C dimensions)
     for cat in ("B", "C"):
-        tids = [f"{cat}{i}" for i in range(1, 5)]
+        tids = cat_tids.get(cat, [])
         for dim in DIMS_BC:
             single_vals, multi_vals = _collect_pairs(score_map, tids, dim)
             if len(single_vals) >= 6:
@@ -250,7 +257,7 @@ def main() -> None:
     # Pass / Fail per ACCEPTANCE_THRESHOLDS
     pass_fail: dict = {}
     for cat in ("A", "B", "C"):
-        tids = [f"{cat}{i}" for i in range(1, 5)]
+        tids = cat_tids.get(cat, [])
         for mode in ("single_agent", "multi_agent"):
             passes = 0
             total = 0
@@ -296,9 +303,15 @@ def main() -> None:
                 "rate": passes / total if total else 0.0,
             }
 
-    # Inter-rater kappa (author vs second rater on 18 stratified items)
-    with RATER_CSV.open() as fh:
-        rater = {row["blind_id"]: row for row in csv.DictReader(fh) if row.get("blind_id")}
+    # Inter-rater kappa (author vs second rater on 18 stratified items).
+    # Skip gracefully if no second-rater file exists yet for this dataset
+    # (e.g. OM before the inter-rater session is run).
+    if RATER_CSV.exists():
+        with RATER_CSV.open() as fh:
+            rater = {row["blind_id"]: row for row in csv.DictReader(fh) if row.get("blind_id")}
+    else:
+        print(f"(no {RATER_CSV.name} for this dataset — skipping inter-rater kappa)")
+        rater = {}
     with SCORES_CSV.open() as fh:
         author = {row["blind_id"]: row for row in csv.DictReader(fh) if row.get("blind_id")}
 

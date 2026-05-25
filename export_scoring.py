@@ -40,10 +40,14 @@ def main():
     lines.append("- **Evidence Grounding** (1-10): Does it reference specific computed values or tool outputs?")
     lines.append("- **Traceability** (0/1/2): Same as Category A\n")
     lines.append("### Ground Truth Reference (Category A)")
-    lines.append("- **A1**: Highest median sojourn for Application = `A_Complete` (861,382s)")
-    lines.append("- **A2**: Top 3 frequency activities for Offer, then compare waiting times")
-    lines.append("- **A3**: Activity with highest sync time between Application + Offer")
-    lines.append("- **A4**: Pooling time at first convergence activity for Application + Offer\n")
+    # Dataset-aware: pull verified Cat-A ground truth from the active task set
+    # (avoids stale/wrong hardcoded text and works for any dataset).
+    from src.config import active_dataset
+    from src.eval.task_set import get_task_set
+    for t in get_task_set(active_dataset()):
+        if t.category == "A":
+            lines.append(f"- **{t.task_id}**: {t.ground_truth}")
+    lines.append("")
     lines.append("---\n")
 
     csv_rows = []
@@ -137,8 +141,28 @@ def main():
     md_path = out / "scoring_sheet.md"
     md_path.write_text("\n".join(lines), encoding="utf-8")
 
-    # Write CSV template
+    # Write CSV template — SAFEGUARD: never silently wipe existing scores.
     csv_path = out / "scores_template.csv"
+    if csv_path.exists():
+        import csv as _csv
+        existing = list(_csv.DictReader(csv_path.open(encoding="utf-8")))
+        n_scored = sum(
+            1 for r in existing
+            if any(r.get(k, "").strip() for k in
+                   ("correctness", "factual_alignment", "analytical_depth", "evidence_grounding"))
+        )
+        if n_scored > 0:
+            import datetime as _dt
+            import shutil as _sh
+            ts = _dt.datetime.now().strftime("%Y%m%d_%H%M%S")
+            bak = csv_path.with_name(f"scores_template_AUTOBACKUP_{ts}.csv")
+            _sh.copy2(csv_path, bak)
+            if "--force" not in sys.argv:
+                print(f"REFUSING to overwrite {csv_path.name}: it has {n_scored} scored "
+                      f"rows. Backed up to {bak.name}. Re-run with --force to overwrite.")
+                return
+            print(f"--force given: overwriting {csv_path.name} ({n_scored} scored rows "
+                  f"backed up to {bak.name}).")
     with csv_path.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=[
             "blind_id", "task_id", "category", "mode", "run_index",
