@@ -1,0 +1,27 @@
+{
+  "A_correctness": {
+    "kappa": 0.0,
+    "n": 6,
+    "interpretation": "poor"
+  },
+  "traceability": {
+    "kappa": -0.028571428571428612,
+    "weighted_kappa_quadratic": -0.028571428571428612,
+    "n": 18,
+    "interpretation": "poor"
+  },
+  "BC_analytical_depth": {
+    "weighted_kappa_quadratic": 0.40000000000000013,
+    "n": 12,
+    "within_1": 1.0,
+    "within_2": 1.0,
+    "interpretation": "fair"
+  },
+  "BC_evidence_grounding": {
+    "weighted_kappa_quadratic": 0.11764705882352947,
+    "n": 12,
+    "within_1": 1.0,
+    "within_2": 1.0,
+    "interpretation": "poor"
+  }
+}
