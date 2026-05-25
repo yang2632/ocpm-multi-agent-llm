@@ -241,12 +241,192 @@ TASK_SET: tuple[EvalTask, ...] = (
 )
 
 
-def get_tasks_by_category(category: str) -> list[EvalTask]:
-    return [t for t in TASK_SET if t.category == category]
+def get_tasks_by_category(category: str, dataset: str = "bpi2017") -> list[EvalTask]:
+    return [t for t in get_task_set(dataset) if t.category == category]
 
 
-def get_task_by_id(task_id: str) -> EvalTask | None:
-    for t in TASK_SET:
+def get_task_by_id(task_id: str, dataset: str = "bpi2017") -> EvalTask | None:
+    for t in get_task_set(dataset):
         if t.task_id == task_id:
             return t
     return None
+
+
+# ════════════════════════════════════════════════════════════════════
+# Order Management task set (second dataset, OCEL 2.0, ocel-standard.org)
+# ════════════════════════════════════════════════════════════════════
+# Cat-A ground truth was verified by TWO independent paths (raw SQL + project
+# tool) on order-management.sqlite (sha256 bec5e88b...a54920); SQL == Tool
+# exactly for all four. See scripts/compute_ground_truth_om.py.
+# Cat-B/C are re-grounded to OM's object structure (orders, items, packages,
+# customers, employees, products) and are DRAFTS pending review.
+OM_TASK_SET: tuple[EvalTask, ...] = (
+    # ── Category A: Bottleneck Identification (closed, ground-truth) ──
+    EvalTask(
+        task_id="OM-A1",
+        category="A",
+        open_closed="C",
+        question=(
+            "Which activity has the highest median sojourn time for order objects?"
+        ),
+        ground_truth=(
+            "confirm order (median sojourn 606564s, n=2000); verified independently "
+            "via raw SQL on the OCEL 2.0 SQLite log and the project sojourn tool "
+            "(SQL == tool exactly)."
+        ),
+        evidence_type="quantitative",
+    ),
+    EvalTask(
+        task_id="OM-A2",
+        category="A",
+        open_closed="C",
+        question=(
+            "For employee objects, identify the three activities with the highest "
+            "employee-event participation frequency and report their median sojourn "
+            "times."
+        ),
+        ground_truth=(
+            "Top-3 by object-event participation frequency (COUNT of employee-event "
+            "rows, matching get_activity_frequency): pick item (n=7659, median "
+            "sojourn 3973s); send package (n=2256, median 6721s); confirm order "
+            "(n=2000, median 36300s). Unique top-3 under participation count; "
+            "SQL == tool exactly."
+        ),
+        evidence_type="quantitative",
+    ),
+    EvalTask(
+        task_id="OM-A3",
+        category="A",
+        open_closed="C",
+        question=(
+            "Which activity exhibits the highest median synchronization time between "
+            "employees and items?"
+        ),
+        ground_truth=(
+            "pick item (median sync 77564s, n=7652, object types employees+items); "
+            "verified via raw SQL and the project synchronization tool (SQL == tool)."
+        ),
+        evidence_type="quantitative",
+    ),
+    EvalTask(
+        task_id="OM-A4",
+        category="A",
+        open_closed="C",
+        question=(
+            "What is the lagging time at activity 'reorder item' between employees "
+            "and items?"
+        ),
+        ground_truth=(
+            "Median lagging at reorder item = 295732s (n=1544, object types "
+            "employees+items); verified via raw SQL and the project lagging tool "
+            "(SQL == tool)."
+        ),
+        evidence_type="quantitative",
+    ),
+    # ── Category B: Root-Cause Hypothesis (open, rubric) — DRAFT ──
+    EvalTask(
+        task_id="OM-B1",
+        category="B",
+        open_closed="O",
+        question=(
+            "What object-type interaction patterns could explain why 'confirm order' "
+            "has the highest sojourn time for order objects?"
+        ),
+        ground_truth="Rubric: evidence grounding, analytical depth, factual alignment",
+        evidence_type="hypothesis",
+    ),
+    EvalTask(
+        task_id="OM-B2",
+        category="B",
+        open_closed="O",
+        question=(
+            "Is there a relationship between the number of items per order and the "
+            "order's total flow time?"
+        ),
+        ground_truth="Rubric; partial verification via computed correlation (orders->items O2O)",
+        evidence_type="hypothesis",
+    ),
+    EvalTask(
+        task_id="OM-B3",
+        category="B",
+        open_closed="O",
+        question=(
+            "What structural features distinguish the slowest 10% of orders from the "
+            "median order?"
+        ),
+        ground_truth="Rubric; partial verification via variant analysis",
+        evidence_type="hypothesis",
+    ),
+    EvalTask(
+        task_id="OM-B4",
+        category="B",
+        open_closed="O",
+        question=(
+            "Propose a causal chain explaining why 'reorder item' shows "
+            "disproportionately high lagging time between employees and items."
+        ),
+        ground_truth="Rubric: causal coherence, evidence use, stated assumptions",
+        evidence_type="hypothesis",
+    ),
+    # ── Category C: Integrated Analysis (open, rubric) — DRAFT ──
+    EvalTask(
+        task_id="OM-C1",
+        category="C",
+        open_closed="O",
+        question=(
+            "Produce a structured report identifying the primary bottleneck in the "
+            "order-to-delivery process, its likely root cause, and one improvement "
+            "recommendation."
+        ),
+        ground_truth="Rubric: completeness, evidence integration, analytical coherence",
+        evidence_type="report",
+    ),
+    EvalTask(
+        task_id="OM-C2",
+        category="C",
+        open_closed="O",
+        question=(
+            "Compare the performance diagnosis from the order perspective versus the "
+            "item perspective."
+        ),
+        ground_truth="Rubric: cross-type reasoning, evidence grounding",
+        evidence_type="report",
+    ),
+    EvalTask(
+        task_id="OM-C3",
+        category="C",
+        open_closed="O",
+        question=(
+            "Decompose the observed order flow time into contributions from "
+            "item-handling activities versus packaging and delivery activities. Based "
+            "on this decomposition, characterise whether and under what assumptions "
+            "reducing item-handling time would meaningfully shift overall flow time."
+        ),
+        ground_truth="Rubric: quantitative reasoning, assumption transparency",
+        evidence_type="report",
+    ),
+    EvalTask(
+        task_id="OM-C4",
+        category="C",
+        open_closed="O",
+        question=(
+            "An analyst claims that 'reorder item' causes most delays. Evaluate this "
+            "claim using available evidence."
+        ),
+        ground_truth="Rubric: critical evaluation, counter-evidence consideration",
+        evidence_type="report",
+    ),
+)
+
+
+# ── Dataset-keyed task-set registry ──
+TASK_SETS: dict[str, tuple[EvalTask, ...]] = {
+    "bpi2017": TASK_SET,          # the original 12 tasks, unchanged
+    "order_management": OM_TASK_SET,
+}
+
+
+def get_task_set(dataset: str) -> tuple[EvalTask, ...]:
+    if dataset not in TASK_SETS:
+        raise ValueError(f"Unknown dataset '{dataset}'. Known: {list(TASK_SETS)}")
+    return TASK_SETS[dataset]

@@ -19,14 +19,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
-from src.config import Config
+from src.config import Config, runs_dir
 from src.tools.log_loader import load_ocel_log, get_log_summary
 from src.agents.single_agent import build_single_agent_graph
 from src.agents.multi_agent import build_multi_agent_graph
 from src.eval.task_set import TASK_SET
 from src.eval.runner import run_single_task
 
-RUNS_DIR = ROOT / "results" / "runs"
+RUNS_DIR = runs_dir()
 N_RUNS = 3
 MODES = ["single_agent", "multi_agent"]
 

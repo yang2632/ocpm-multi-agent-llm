@@ -117,9 +117,18 @@ def build_single_agent_graph(
 
     compiled = graph.compile()
 
+    # Build the dataset-agnostic log profile once and inject into the prompt,
+    # removing dataset-specific hardcoding. Same builder is used for the
+    # multi-agent prompt, so no prompt asymmetry is introduced.
+    from ..tools.log_loader import get_log_summary, build_log_profile
+
+    _system_prompt = _load_system_prompt().replace(
+        "{log_profile}", build_log_profile(get_log_summary(ocel_data))
+    )
+
     def run(question: str) -> dict:
         """Execute a single question and return full trace."""
-        system_prompt = _load_system_prompt()
+        system_prompt = _system_prompt
         initial_state: SingleAgentState = {
             "messages": [
                 SystemMessage(content=system_prompt),

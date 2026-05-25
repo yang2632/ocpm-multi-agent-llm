@@ -28,11 +28,13 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-RESULTS_DIR = Path(__file__).parent / "results"
-RUNS_FILE = RESULTS_DIR / "runs" / "all_results.json"
-CSV_FILE = RESULTS_DIR / "scores" / "scores_template.csv"
-TRANSLATIONS_FILE = RESULTS_DIR / "scores" / "translations_zh.json"
-LLM_REVIEW_FILE = RESULTS_DIR / "scores" / "llm_review_zh.json"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from src.config import runs_dir, scores_dir  # noqa: E402
+
+RUNS_FILE = runs_dir() / "all_results.json"
+CSV_FILE = scores_dir() / "scores_template.csv"
+TRANSLATIONS_FILE = scores_dir() / "translations_zh.json"
+LLM_REVIEW_FILE = scores_dir() / "llm_review_zh.json"
 
 CSV_FIELDS = [
     "blind_id", "task_id", "category", "mode", "run_index",
@@ -54,6 +56,20 @@ GROUND_TRUTH_ZH = {
     "A4": "A_Complete 上 Application 与 Case_R 之间的 lagging time 中位数 = 860,588s",
 }
 
+# Dataset-aware override: for any non-BPI dataset, derive Cat-A ground truth
+# from that dataset's own task set (each Cat-A task carries a verified
+# ground_truth string). BPI 2017 keeps the hardcoded dicts above unchanged.
+from src.config import active_dataset as _active_dataset  # noqa: E402
+from src.eval.task_set import get_task_set as _get_task_set  # noqa: E402
+
+if _active_dataset() != "bpi2017":
+    GROUND_TRUTH = {
+        t.task_id: t.ground_truth
+        for t in _get_task_set(_active_dataset())
+        if t.category == "A"
+    }
+    GROUND_TRUTH_ZH = {}  # no separate ZH translation for non-BPI; English shown
+
 QUESTION_ZH = {
     "A1": "在 application 对象上,哪一个活动的 sojourn time 中位数最高?",
     "A2": "offer 对象在频次最高的三个活动里,sojourn time 的分布对比如何?",
@@ -68,6 +84,28 @@ QUESTION_ZH = {
     "C3": "把观测到的 application flow time 分解为 offer 侧活动贡献与其他组件;基于此分解,在何种假设下减少 offer 处理时间会显著影响整体流程时长。",
     "C4": "一位分析师声称活动 X 导致了大部分延迟,请基于可用证据评估该主张。",
 }
+
+# Dataset-aware Chinese question text. BPI keeps the dict above; other datasets
+# supply their own. (Question text is dataset-specific, so it must be keyed by
+# that dataset's task IDs.)
+_OM_QUESTION_ZH = {
+    "OM-A1": "在 order 对象上,哪一个活动的 sojourn time 中位数最高?",
+    "OM-A2": "在 employee 对象上,参与频次(employee-event 参与次数)最高的三个活动是哪些?并报告它们的 sojourn time 中位数。",
+    "OM-A3": "在 employees 与 items 之间,哪一个活动的同步时间(synchronization time)中位数最高?",
+    "OM-A4": "在活动 'reorder item' 上,employees 与 items 之间的 lagging time 是多少?",
+    "OM-B1": "有哪些对象类型(object-type)之间的交互模式,可以解释为什么 'confirm order' 在 order 对象上的 sojourn time 最高?",
+    "OM-B2": "每个 order 包含的 item 数量,与该 order 的总流程时长(flow time)之间是否存在关系?",
+    "OM-B3": "最慢的 10% 的 order 与中位数 order 相比,在结构特征上有哪些差异?",
+    "OM-B4": "给出一条因果链,解释为什么 'reorder item' 在 employees 与 items 之间表现出异常偏高的 lagging time。",
+    "OM-C1": "产出一份结构化报告:识别订单到交付(order-to-delivery)流程中的主要瓶颈、其可能的根因,以及一条改进建议。",
+    "OM-C2": "比较从 order 视角与从 item 视角得到的性能诊断结果。",
+    "OM-C3": "把观测到的 order flow time 分解为 item 处理类活动的贡献与打包/配送类活动的贡献;基于此分解,说明在何种假设下减少 item 处理时间会显著影响整体流程时长。",
+    "OM-C4": "一位分析师声称 'reorder item' 导致了大部分延迟,请基于可用证据评估该主张。",
+}
+if _active_dataset() == "order_management":
+    QUESTION_ZH = _OM_QUESTION_ZH
+elif _active_dataset() != "bpi2017":
+    QUESTION_ZH = {}  # unknown dataset: show English question only (graceful)
 
 # ANSI colours
 G = "\033[32m"   # green

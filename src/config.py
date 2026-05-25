@@ -12,6 +12,60 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data" / "bpi2017"
 RESULTS_DIR = PROJECT_ROOT / "results"
 
+# ── Dataset registry ──────────────────────────────────────────────
+# Each key selects an OCEL 2.0 log + display name (used in the injected log
+# profile). Path may be a directory (run.py picks the first OCEL file) or a
+# file. BPI 2017 stays the default; Order Management is the second dataset.
+DATASETS: dict[str, dict[str, object]] = {
+    "bpi2017": {
+        "path": PROJECT_ROOT / "data" / "bpi2017",
+        "display_name": "BPI Challenge 2017 (loan application)",
+    },
+    "order_management": {
+        "path": PROJECT_ROOT / "data" / "order_management",
+        "display_name": "Order Management (ocel-standard.org, OCEL 2.0)",
+    },
+}
+
+
+def dataset_path(key: str) -> Path:
+    if key not in DATASETS:
+        raise ValueError(f"Unknown dataset '{key}'. Known: {list(DATASETS)}")
+    return Path(DATASETS[key]["path"])  # type: ignore[arg-type]
+
+
+def dataset_display_name(key: str) -> str:
+    entry = DATASETS.get(key, {})
+    return str(entry.get("display_name", key))
+
+
+# ── Dataset-isolated results paths (single source of truth) ───────
+# BPI 2017 keeps the legacy flat layout (results/{runs,scores,analysis}) so the
+# existing thesis results and their paths are unchanged. Every other dataset is
+# isolated under results/<dataset>/{runs,scores,analysis}. All scoring/analysis
+# scripts MUST route through these helpers so BPI and OM never collide.
+def active_dataset() -> str:
+    """Active dataset from the DATASET env var (loads .env first)."""
+    load_dotenv(PROJECT_ROOT / ".env")
+    return os.getenv("DATASET", "bpi2017")
+
+
+def dataset_results_dir(dataset: str | None = None) -> Path:
+    ds = dataset or active_dataset()
+    return RESULTS_DIR if ds == "bpi2017" else RESULTS_DIR / ds
+
+
+def runs_dir(dataset: str | None = None) -> Path:
+    return dataset_results_dir(dataset) / "runs"
+
+
+def scores_dir(dataset: str | None = None) -> Path:
+    return dataset_results_dir(dataset) / "scores"
+
+
+def analysis_dir(dataset: str | None = None) -> Path:
+    return dataset_results_dir(dataset) / "analysis"
+
 
 @dataclass(frozen=True)
 class Config:
@@ -28,6 +82,7 @@ class Config:
     max_tokens: int = 4096
     task_timeout_s: int = 600
     runs_per_task: int = 3
+    dataset: str = "bpi2017"
     data_path: Path = field(default_factory=lambda: DATA_DIR)
 
     @classmethod
@@ -37,6 +92,9 @@ class Config:
         else:
             load_dotenv(PROJECT_ROOT / ".env")
 
+        dataset = os.getenv("DATASET", "bpi2017")
+        # DATA_PATH (if set) wins; otherwise derive the path from the dataset key.
+        default_path = str(dataset_path(dataset)) if dataset in DATASETS else str(DATA_DIR)
         return cls(
             openai_api_key=os.getenv("OPENAI_API_KEY", ""),
             openai_base_url=os.getenv("OPENAI_BASE_URL", ""),
@@ -48,7 +106,8 @@ class Config:
             max_tokens=int(os.getenv("LLM_MAX_TOKENS", "4096")),
             task_timeout_s=int(os.getenv("TASK_TIMEOUT_S", "600")),
             runs_per_task=int(os.getenv("RUNS_PER_TASK", "3")),
-            data_path=Path(os.getenv("DATA_PATH", str(DATA_DIR))),
+            dataset=dataset,
+            data_path=Path(os.getenv("DATA_PATH", default_path)),
         )
 
 

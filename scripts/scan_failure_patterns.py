@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -24,8 +25,11 @@ import numpy as np
 # ---------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-RESULTS_FILE = REPO_ROOT / "results" / "runs" / "all_results.json"
-OUTPUT_FILE = REPO_ROOT / "results" / "analysis" / "failure_patterns_scan.txt"
+sys.path.insert(0, str(REPO_ROOT))
+from src.config import runs_dir, analysis_dir  # noqa: E402
+
+RESULTS_FILE = runs_dir() / "all_results.json"
+OUTPUT_FILE = analysis_dir() / "failure_patterns_scan.txt"
 
 
 # ---------------------------------------------------------------------------

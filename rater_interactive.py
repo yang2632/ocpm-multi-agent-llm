@@ -44,7 +44,9 @@ from score_interactive import (  # noqa: E402
 )
 
 PROJECT = Path(__file__).resolve().parent
-RATER_CSV = PROJECT / "results" / "scores" / "rater_scores.csv"
+from src.config import scores_dir  # noqa: E402  (sys.path set above)
+
+RATER_CSV = scores_dir() / "rater_scores.csv"
 RATER_SEED = 99
 SAMPLE_PER_CATEGORY: dict[str, int] = {"A": 6, "B": 6, "C": 6}  # 18 total
 

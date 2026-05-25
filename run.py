@@ -50,9 +50,11 @@ def main() -> int:
     cfg = Config.from_env(Path(args.dotenv) if args.dotenv else None)
 
     if args.analyze:
-        from src.eval.analysis import generate_full_analysis
+        # analysis.main() is the entry point; the prior name did not exist
+        # (pre-existing bug, fixed here so --analyze runs and is dataset-aware).
+        from src.eval.analysis import main as run_analysis
 
-        generate_full_analysis()
+        run_analysis()
         return 0
 
     if args.score:
@@ -118,29 +120,39 @@ def main() -> int:
         base_url=base_url,
     )
 
-    # Select tasks
-    from src.eval.task_set import TASK_SET, get_task_by_id
+    # Select tasks for the active dataset
+    from src.eval.task_set import get_task_set
+
+    full_set = get_task_set(cfg.dataset)
+    print(f"Dataset: {cfg.dataset} ({len(full_set)} tasks)")
 
     if args.tasks:
         task_ids = [t.strip() for t in args.tasks.split(",")]
-        tasks = tuple(t for t in TASK_SET if t.task_id in task_ids)
+        tasks = tuple(t for t in full_set if t.task_id in task_ids)
         if not tasks:
             print(f"No matching tasks for: {task_ids}")
             return 1
     elif args.pilot:
-        # One task per category
+        # First task of each category (dataset-agnostic)
         tasks = tuple(
-            t for t in TASK_SET if t.task_id in ("A1", "B1", "C1")
+            next(t for t in full_set if t.category == cat)
+            for cat in ("A", "B", "C")
         )
     else:
-        tasks = TASK_SET
+        tasks = full_set
 
     n_runs = 1 if args.pilot else cfg.runs_per_task
 
     from src.eval.runner import run_evaluation
+    from src.config import runs_dir
+
+    # Isolate results per dataset so a new dataset never overwrites the
+    # existing BPI 2017 results (BPI -> results/runs; others -> results/<ds>/runs).
+    out_dir = runs_dir(cfg.dataset)
 
     print(f"\nStarting evaluation: {len(tasks)} tasks × 2 modes × {n_runs} runs "
           f"= {len(tasks) * 2 * n_runs} executions")
+    print(f"Output dir: {out_dir}")
 
     results = run_evaluation(
         single_agent_fn=single_fn,
@@ -148,6 +160,7 @@ def main() -> int:
         tasks=tasks,
         n_runs=n_runs,
         timeout_s=cfg.task_timeout_s,
+        output_dir=out_dir,
     )
 
     # Quick summary

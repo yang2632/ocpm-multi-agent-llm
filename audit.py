@@ -35,8 +35,10 @@ from score_interactive import (  # noqa: E402
 )
 
 PROJECT = Path(__file__).resolve().parent
-MAIN_CSV = PROJECT / "results" / "scores" / "scores_template.csv"
-AUDIT_CSV = PROJECT / "results" / "scores" / "audit_scores.csv"
+from src.config import scores_dir  # noqa: E402  (sys.path set above)
+
+MAIN_CSV = scores_dir() / "scores_template.csv"
+AUDIT_CSV = scores_dir() / "audit_scores.csv"
 AUDIT_SEED = 99
 AUDIT_N: dict[str, int] = {"A": 4, "B": 5, "C": 5}  # 14 total
 
