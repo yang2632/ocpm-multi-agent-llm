@@ -39,6 +39,34 @@ def dataset_display_name(key: str) -> str:
     return str(entry.get("display_name", key))
 
 
+# ── Dataset-isolated results paths (single source of truth) ───────
+# BPI 2017 keeps the legacy flat layout (results/{runs,scores,analysis}) so the
+# existing thesis results and their paths are unchanged. Every other dataset is
+# isolated under results/<dataset>/{runs,scores,analysis}. All scoring/analysis
+# scripts MUST route through these helpers so BPI and OM never collide.
+def active_dataset() -> str:
+    """Active dataset from the DATASET env var (loads .env first)."""
+    load_dotenv(PROJECT_ROOT / ".env")
+    return os.getenv("DATASET", "bpi2017")
+
+
+def dataset_results_dir(dataset: str | None = None) -> Path:
+    ds = dataset or active_dataset()
+    return RESULTS_DIR if ds == "bpi2017" else RESULTS_DIR / ds
+
+
+def runs_dir(dataset: str | None = None) -> Path:
+    return dataset_results_dir(dataset) / "runs"
+
+
+def scores_dir(dataset: str | None = None) -> Path:
+    return dataset_results_dir(dataset) / "scores"
+
+
+def analysis_dir(dataset: str | None = None) -> Path:
+    return dataset_results_dir(dataset) / "analysis"
+
+
 @dataclass(frozen=True)
 class Config:
     """Immutable runtime configuration loaded from environment."""

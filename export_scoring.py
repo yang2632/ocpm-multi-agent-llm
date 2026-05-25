@@ -4,17 +4,19 @@
 import csv
 import json
 import random
+import sys
 from pathlib import Path
 
-RESULTS_DIR = Path(__file__).parent / "results"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from src.config import runs_dir, scores_dir  # noqa: E402
 
 
 def main():
     results = json.loads(
-        (RESULTS_DIR / "runs" / "all_results.json").read_text(encoding="utf-8")
+        (runs_dir() / "all_results.json").read_text(encoding="utf-8")
     )
 
-    out = RESULTS_DIR / "scores"
+    out = scores_dir()
     out.mkdir(parents=True, exist_ok=True)
 
     # Randomize for blind scoring (reproducible seed)

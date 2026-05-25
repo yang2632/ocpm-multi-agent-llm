@@ -33,11 +33,11 @@ from typing import Any
 
 from openai import OpenAI
 
-from src.config import Config
+from src.config import Config, runs_dir, scores_dir
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-RUNS_FILE = PROJECT_ROOT / "results" / "runs" / "all_results.json"
-CACHE_FILE = PROJECT_ROOT / "results" / "scores" / "llm_review_zh.json"
+RUNS_FILE = runs_dir() / "all_results.json"
+CACHE_FILE = scores_dir() / "llm_review_zh.json"
 
 # Single source of truth: import from score_interactive to avoid drift.
 # This was a real bug — both files maintained their own GROUND_TRUTH copies

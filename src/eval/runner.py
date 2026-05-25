@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 from typing import Callable
 
-from ..config import Config, RESULTS_DIR
+from ..config import Config, RESULTS_DIR, runs_dir
 from .task_set import TASK_SET, EvalTask
 
 
@@ -89,7 +89,7 @@ def run_evaluation(
     if tasks is None:
         tasks = TASK_SET
 
-    out_dir = output_dir or (RESULTS_DIR / "runs")
+    out_dir = output_dir or runs_dir()
     out_dir.mkdir(parents=True, exist_ok=True)
 
     all_results: list[dict] = []

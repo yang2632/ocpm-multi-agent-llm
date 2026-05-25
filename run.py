@@ -50,9 +50,11 @@ def main() -> int:
     cfg = Config.from_env(Path(args.dotenv) if args.dotenv else None)
 
     if args.analyze:
-        from src.eval.analysis import generate_full_analysis
+        # analysis.main() is the entry point; the prior name did not exist
+        # (pre-existing bug, fixed here so --analyze runs and is dataset-aware).
+        from src.eval.analysis import main as run_analysis
 
-        generate_full_analysis()
+        run_analysis()
         return 0
 
     if args.score:
@@ -142,13 +144,11 @@ def main() -> int:
     n_runs = 1 if args.pilot else cfg.runs_per_task
 
     from src.eval.runner import run_evaluation
-    from src.config import RESULTS_DIR
+    from src.config import runs_dir
 
     # Isolate results per dataset so a new dataset never overwrites the
-    # existing BPI 2017 results. BPI keeps its legacy path (results/runs);
-    # other datasets write to results/<dataset>/runs.
-    out_dir = (RESULTS_DIR / "runs" if cfg.dataset == "bpi2017"
-               else RESULTS_DIR / cfg.dataset / "runs")
+    # existing BPI 2017 results (BPI -> results/runs; others -> results/<ds>/runs).
+    out_dir = runs_dir(cfg.dataset)
 
     print(f"\nStarting evaluation: {len(tasks)} tasks × 2 modes × {n_runs} runs "
           f"= {len(tasks) * 2 * n_runs} executions")

@@ -11,7 +11,7 @@ import json
 import random
 from pathlib import Path
 
-from ..config import RESULTS_DIR
+from ..config import runs_dir as _runs_dir, scores_dir as _scores_dir
 
 
 def _load_run_results(runs_dir: Path) -> list[dict]:
@@ -38,8 +38,8 @@ def run_scoring_session(
     Presents answers in randomized order (blind=True hides mode labels).
     Collects scores and writes to CSV.
     """
-    runs_dir = runs_dir or (RESULTS_DIR / "runs")
-    output_path = output_path or (RESULTS_DIR / "scores" / "scores.csv")
+    runs_dir = runs_dir or _runs_dir()
+    output_path = output_path or (_scores_dir() / "scores.csv")
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     results = _load_run_results(runs_dir)

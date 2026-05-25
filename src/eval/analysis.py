@@ -30,12 +30,13 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 from scipy import stats  # noqa: E402
 
-from ..config import ACCEPTANCE_THRESHOLDS, RESULTS_DIR
+from ..config import ACCEPTANCE_THRESHOLDS, runs_dir, scores_dir, analysis_dir
 
-SCORES_CSV = RESULTS_DIR / "scores" / "scores_template.csv"
-RATER_CSV = RESULTS_DIR / "scores" / "rater_scores.csv"
-RUNS_FILE = RESULTS_DIR / "runs" / "all_results.json"
-ANALYSIS_DIR = RESULTS_DIR / "analysis"
+# Dataset-isolated paths (DATASET env var; BPI keeps legacy results/*).
+SCORES_CSV = scores_dir() / "scores_template.csv"
+RATER_CSV = scores_dir() / "rater_scores.csv"
+RUNS_FILE = runs_dir() / "all_results.json"
+ANALYSIS_DIR = analysis_dir()
 
 DIMS_A = ["correctness", "traceability"]
 DIMS_BC = [

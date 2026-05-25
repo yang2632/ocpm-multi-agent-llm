@@ -28,11 +28,13 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-RESULTS_DIR = Path(__file__).parent / "results"
-RUNS_FILE = RESULTS_DIR / "runs" / "all_results.json"
-CSV_FILE = RESULTS_DIR / "scores" / "scores_template.csv"
-TRANSLATIONS_FILE = RESULTS_DIR / "scores" / "translations_zh.json"
-LLM_REVIEW_FILE = RESULTS_DIR / "scores" / "llm_review_zh.json"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from src.config import runs_dir, scores_dir  # noqa: E402
+
+RUNS_FILE = runs_dir() / "all_results.json"
+CSV_FILE = scores_dir() / "scores_template.csv"
+TRANSLATIONS_FILE = scores_dir() / "translations_zh.json"
+LLM_REVIEW_FILE = scores_dir() / "llm_review_zh.json"
 
 CSV_FIELDS = [
     "blind_id", "task_id", "category", "mode", "run_index",
