@@ -1,6 +1,6 @@
 {
-  "manifest_version": "1.0",
-  "description": "Shared LLM and decoding configuration that produced the 72 archived runs in results/runs/. Per-run traces themselves do not include these fields; the manifest documents them centrally for reproducibility.",
+  "manifest_version": "1.1",
+  "description": "Shared LLM and decoding configuration that produced the 144 archived runs (72 per log, two OCEL 2.0 logs) in results/runs/ (BPI 2017) and results/order_management/runs/. Per-run traces themselves do not include these fields; the manifest documents them centrally for reproducibility.",
   "thesis_evaluation": {
     "llm_provider": "openai",
     "llm_model": "gpt-5.5",
@@ -8,18 +8,35 @@
     "llm_max_tokens": 4096,
     "task_timeout_seconds": 600,
     "runs_per_task": 3,
-    "total_runs": 72,
-    "tasks": 12,
+    "total_runs": 144,
+    "tasks_per_log": 12,
+    "tasks_total": 24,
     "task_categories": ["A", "B", "C"],
     "tasks_per_category": 4,
     "architectures": ["single_agent", "multi_agent"],
-    "dataset_doi": "10.4121/uuid:5f3067df-f10b-45da-b98b-86ae4c7a310b",
-    "dataset_label": "BPI Challenge 2017 (Loan Application), converted to OCEL 2.0",
-    "object_types": ["Application", "Offer", "Workflow", "Case_R"],
-    "execution_period": "2026-04 to 2026-05"
+    "execution_period": "2026-04 to 2026-05",
+    "datasets": [
+      {
+        "dataset_key": "bpi2017",
+        "dataset_doi": "10.4121/uuid:5f3067df-f10b-45da-b98b-86ae4c7a310b",
+        "dataset_label": "BPI Challenge 2017 (Loan Application), converted to OCEL 2.0",
+        "object_types": ["Application", "Offer", "Workflow", "Case_R"],
+        "results_dir": "results/runs/",
+        "runs": 72
+      },
+      {
+        "dataset_key": "order_management",
+        "dataset_label": "Order Management (OCEL 2.0 standard example log)",
+        "source_file": "data/order_management/order-management.sqlite",
+        "object_types": ["orders", "items", "packages", "customers", "employees", "products"],
+        "results_dir": "results/order_management/runs/",
+        "runs": 72
+      }
+    ]
   },
   "notes": [
     "These parameters were frozen before execution; see thesis Method §3.7 (Implementation Protocol).",
-    "The .env.example defaults are illustrative for new installations and may differ; set LLM_MODEL=gpt-5.5 and TASK_TIMEOUT_S=600 to reproduce the thesis runs."
+    "The .env.example defaults are illustrative for new installations and may differ; set LLM_MODEL=gpt-5.5 and TASK_TIMEOUT_S=600 to reproduce the thesis runs.",
+    "Both per-log task sets (BPI 2017 tasks A1-C4 and Order Management tasks OM-A1-OM-C4) are specified in the thesis Method chapter; Category-A ground truth for both logs was cross-checked by raw SQL and the project tools (SQL == tool)."
   ]
 }

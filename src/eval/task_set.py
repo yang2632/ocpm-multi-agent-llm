@@ -259,7 +259,8 @@ def get_task_by_id(task_id: str, dataset: str = "bpi2017") -> EvalTask | None:
 # tool) on order-management.sqlite (sha256 bec5e88b...a54920); SQL == Tool
 # exactly for all four. See scripts/compute_ground_truth_om.py.
 # Cat-B/C are re-grounded to OM's object structure (orders, items, packages,
-# customers, employees, products) and are DRAFTS pending review.
+# customers, employees, products); reviewed and frozen for the thesis
+# evaluation (see Method §3.7, Table "Order Management task set").
 OM_TASK_SET: tuple[EvalTask, ...] = (
     # ── Category A: Bottleneck Identification (closed, ground-truth) ──
     EvalTask(
@@ -323,7 +324,7 @@ OM_TASK_SET: tuple[EvalTask, ...] = (
         ),
         evidence_type="quantitative",
     ),
-    # ── Category B: Root-Cause Hypothesis (open, rubric) — DRAFT ──
+    # ── Category B: Root-Cause Hypothesis (open, rubric) ──
     EvalTask(
         task_id="OM-B1",
         category="B",
@@ -368,7 +369,7 @@ OM_TASK_SET: tuple[EvalTask, ...] = (
         ground_truth="Rubric: causal coherence, evidence use, stated assumptions",
         evidence_type="hypothesis",
     ),
-    # ── Category C: Integrated Analysis (open, rubric) — DRAFT ──
+    # ── Category C: Integrated Analysis (open, rubric) ──
     EvalTask(
         task_id="OM-C1",
         category="C",
