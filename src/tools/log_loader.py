@@ -105,6 +105,38 @@ def load_ocel_log(path: str) -> OCELData:
     return data
 
 
+def _e2o_cooccurrence(ocel_data: OCELData) -> list[dict]:
+    """List object-type pairs that co-occur within the same event (E2O level).
+
+    This is what synchronization/lagging analysis actually needs (events touching
+    two types), which is distinct from the O2O parent/child relationships. Result
+    is cached on the OCELData to keep get_log_summary fast on repeated tool calls.
+    """
+    cache = ocel_data._timing_cache
+    if "e2o_cooccurrence" in cache:
+        return cache["e2o_cooccurrence"]
+
+    oid_type = dict(
+        zip(ocel_data.objects_df["ocel:oid"], ocel_data.objects_df["ocel:type"])
+    )
+    df = pd.DataFrame(
+        {
+            "eid": ocel_data.e2o_df["ocel:eid"].values,
+            "t": ocel_data.e2o_df["ocel:oid"].map(oid_type).values,
+        }
+    ).dropna().drop_duplicates()
+    # self-join per event, keep ordered type pairs (t_x < t_y), count events
+    merged = df.merge(df, on="eid")
+    merged = merged[merged["t_x"] < merged["t_y"]]
+    counts = merged.groupby(["t_x", "t_y"]).size().sort_values(ascending=False)
+    pairs = [
+        {"type_a": a, "type_b": b, "n_events": int(n)}
+        for (a, b), n in counts.items()
+    ]
+    cache["e2o_cooccurrence"] = pairs
+    return pairs
+
+
 def get_log_summary(ocel_data: OCELData) -> dict:
     """Return a structured summary of the loaded log for agent context.
 
@@ -141,4 +173,49 @@ def get_log_summary(ocel_data: OCELData) -> dict:
         "num_object_types": len(ocel_data.object_types),
         "num_activities": len(ocel_data.activity_names),
         "o2o_relationships": o2o_pairs,
+        # E2O event-level co-occurrence: pairs of object types that share events.
+        # These (not the O2O pairs) are the pairs valid for synchronization /
+        # lagging analysis.
+        "e2o_cooccurrence": _e2o_cooccurrence(ocel_data),
     }
+
+
+def build_log_profile(summary: dict, display_name: str | None = None) -> str:
+    """Build a dataset-agnostic log profile string for prompt injection.
+
+    Derived entirely from the loaded log's own schema (object types, activities,
+    O2O pairs), so it is automatically correct for any OCEL 2.0 log and removes
+    the need to hardcode dataset-specific text in the prompts. The same function
+    is used for the single- and multi-agent prompts to avoid any prompt
+    asymmetry between architectures.
+    """
+    types = ", ".join(f'"{t}"' for t in summary["object_types"])
+    acts = summary["activities"]
+    act_str = ", ".join(acts[:40]) + (" ..." if len(acts) > 40 else "")
+    o2o = summary.get("o2o_relationships", [])
+    o2o_str = (
+        "; ".join(
+            f'{p["parent_type"]}->{p["child_type"]} (n={p["n_links"]})' for p in o2o
+        )
+        or "none"
+    )
+    # E2O event-level co-occurrence drives synchronization/lagging (NOT O2O).
+    cooc = summary.get("e2o_cooccurrence", [])
+    cooc_str = (
+        "; ".join(
+            f'{p["type_a"]}&{p["type_b"]} (n={p["n_events"]})' for p in cooc
+        )
+        or "none"
+    )
+    name = display_name or "OCEL 2.0 log"
+    return (
+        f"Log: {name}. "
+        f'Object types ({summary["num_object_types"]}): {types}. '
+        f'Activities ({summary["num_activities"]}): {act_str}. '
+        f"Valid O2O (parent->child) pairs for parent/child correlation: {o2o_str}; "
+        f"only these can be used with the correlation tool. "
+        f"Object-type pairs that co-occur in the same events (valid for "
+        f"synchronization/lagging analysis): {cooc_str}. "
+        f"Synchronization and lagging require an E2O co-occurrence pair above, "
+        f"not an O2O pair."
+    )

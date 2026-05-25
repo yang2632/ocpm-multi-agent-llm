@@ -59,9 +59,14 @@ def build_multi_agent_graph(
     )
     llm_with_tools = llm.bind_tools(TOOL_DEFINITIONS)
 
-    planner_prompt = _load_prompt("planner")
-    analyst_prompt = _load_prompt("analyst")
-    synthesizer_prompt = _load_prompt("synthesizer")
+    # Inject the dataset-agnostic log profile (same builder as single-agent),
+    # replacing dataset-specific hardcoding in the planner prompt.
+    from ..tools.log_loader import get_log_summary, build_log_profile
+
+    _profile = build_log_profile(get_log_summary(ocel_data))
+    planner_prompt = _load_prompt("planner").replace("{log_profile}", _profile)
+    analyst_prompt = _load_prompt("analyst").replace("{log_profile}", _profile)
+    synthesizer_prompt = _load_prompt("synthesizer").replace("{log_profile}", _profile)
 
     # ── Planner Node ──────────────────────────────────────────────
 
