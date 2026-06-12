@@ -73,3 +73,8 @@ logs/*.log
 results/*/scores/*backup*
 results/*/scores/*AUTOBACKUP*
 results/*/analysis/*backup*
+
+# private reading aids — never commit
+translate_results.py
+**/translations_zh*.json
+**/llm_review_zh*.json
